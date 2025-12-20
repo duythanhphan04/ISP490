@@ -2,6 +2,7 @@ package com.devteria.identity_service.configuration;
 
 import com.devteria.identity_service.entity.User;
 import com.devteria.identity_service.service.AuthenticationService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -96,7 +97,13 @@ public class SecurityConfig {
                             OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
                             String email = oAuth2User.getAttribute("email");
                             String name = oAuth2User.getAttribute("name");
-
+                            if(email == null || !email.endsWith("fpt.edu.vn") ) {
+                                response.sendError(
+                                        HttpServletResponse.SC_BAD_REQUEST,
+                                        "Email or Name not found from OAuth2 provider"
+                                );
+                                return;
+                            }
                             // Tạo hoặc lấy user từ DB
                             User user = authenticationService.findOrCreateUser(email, name);
 
