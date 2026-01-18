@@ -48,12 +48,9 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(request -> request
-                        // 🔓 Cho phép WebSocket, SockJS, STOMP connect
                         .requestMatchers(
                                 "/chat-websocket/**", "/ws/**", "/topic/**", "/queue/**", "/app/**","/api/auth/**", "/auth/**"
                         ).permitAll()
-
-                        // 🔓 Cho phép các request REST cơ bản (nếu bạn muốn)
                         .requestMatchers(HttpMethod.GET).permitAll()
                         .requestMatchers(HttpMethod.POST).permitAll()
                         .requestMatchers(HttpMethod.PUT).permitAll()
@@ -71,11 +68,7 @@ public class SecurityConfig {
                         )
                         .authenticationEntryPoint(new JWTAuthenticationEntryPoint())
                 )
-
-                // ❌ Tắt CSRF để STOMP và REST hoạt động bình thường
                 .csrf(AbstractHttpConfigurer::disable)
-
-                // ✅ Bật CORS global (dùng bean bên dưới)
                 .cors(Customizer.withDefaults());
 
         return http.build();

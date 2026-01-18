@@ -1,5 +1,7 @@
 package com.devteria.identity_service.entity;
 
+import com.devteria.identity_service.enums.GroupStatus;
+import com.devteria.identity_service.enums.GroupType;
 import com.devteria.identity_service.enums.SystemRole;
 import com.devteria.identity_service.enums.UserStatus;
 import jakarta.persistence.*;
@@ -16,34 +18,34 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "User")
-public class User {
+@Table(name = "group_info")
+public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Size(max = 255)
-    @Column(name = "user_id", nullable = false)
-    String user_id;
+    @Column(name = "group_id", nullable = false)
+    String group_id;
 
     @NotNull
     @Column(name = "user_name", nullable = false)
-    String username;
+    String group_name;
 
-    @Size(max = 255)
-    @Column(name = "email")
-    String email;
+    @NotNull
+    @Column(name = "description", nullable = false)
+    String description;
 
-    @Column(name = "system_role", length = 255)
+    @NotNull
+    @Column(name = "member", nullable = false)
+    int member;
+
+    @Column(name = "group_type", length = 255)
     @Enumerated(EnumType.STRING)
-    SystemRole role;
+    GroupType group_type;
+
+    @Column(name = "group_status", length = 255)
+    @Enumerated(EnumType.STRING)
+    GroupStatus status;
 
     @Column(name = "created_at")
     Instant createdAt;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "department_id", referencedColumnName = "department_id")
-    Department department;
-
-    @Column(name = "status", length = 255)
-    @Enumerated(EnumType.STRING)
-    UserStatus status;
 }

@@ -1,10 +1,10 @@
 package com.devteria.identity_service.configuration;
 
 import com.devteria.identity_service.entity.User;
-import com.devteria.identity_service.enums.Role;
+import com.devteria.identity_service.enums.SystemRole;
 import com.devteria.identity_service.enums.UserStatus;
-import com.devteria.identity_service.repository.UserRepository;
 import java.time.Instant;
+import com.devteria.identity_service.repository.httpclient.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,12 +29,11 @@ public class ApplicationInitConfig {
         User user =
             User.builder()
                 .username("admin")
-                .password(passwordEncoder.encode("admin"))
-                .role(Role.ADMIN)
+                .role(SystemRole.ADMIN)
                 .status(UserStatus.ACTIVE)
                 .createdAt(Instant.now())
                 .email("duyhcm04@gmail.com")
-                .fullName("Phan Thanh Duy")
+                .username("Phan Thanh Duy")
                 .build();
         userRepository.save(user);
         log.warn(

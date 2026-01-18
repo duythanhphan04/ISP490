@@ -1,6 +1,6 @@
 package com.devteria.identity_service.enums;
 
-public enum UserStatus {
+public enum GroupDashboardStatus {
     ACTIVE,
     INACTIVE
 }

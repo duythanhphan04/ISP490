@@ -3,16 +3,14 @@ package com.devteria.identity_service.service;
 import com.devteria.identity_service.dto.*;
 import com.devteria.identity_service.entity.InvalidatedToken;
 import com.devteria.identity_service.entity.User;
-import com.devteria.identity_service.enums.Role;
-import com.devteria.identity_service.enums.UserPlan;
+import com.devteria.identity_service.enums.SystemRole;
 import com.devteria.identity_service.enums.UserStatus;
 import com.devteria.identity_service.exception.ErrorCode;
 import com.devteria.identity_service.exception.WebException;
-import com.devteria.identity_service.mapper.UserMapper;
-import com.devteria.identity_service.repository.InvalidatedTokenRepository;
-import com.devteria.identity_service.repository.UserRepository;
+import com.devteria.identity_service.repository.httpclient.InvalidatedTokenRepository;
 import com.devteria.identity_service.repository.httpclient.OutBoundIdentityClient;
 import com.devteria.identity_service.repository.httpclient.OutboundUserClient;
+import com.devteria.identity_service.repository.httpclient.UserRepository;
 import com.devteria.identity_service.response.AuthenticationResponse;
 import com.devteria.identity_service.response.IntrospectResponse;
 import com.nimbusds.jose.*;
@@ -20,14 +18,12 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -35,8 +31,6 @@ import lombok.experimental.NonFinal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -45,11 +39,9 @@ import org.springframework.stereotype.Service;
 public class AuthenticationService {
     private static final Log log = LogFactory.getLog(AuthenticationService.class);
     UserRepository userRepository;
-    InvalidatedTokenRepository invalidatedTokenRepository;
     OutBoundIdentityClient outBoundIdentityClient;
     OutboundUserClient outboundUserClient;
-    UserMapper userMapper;
-
+    InvalidatedTokenRepository invalidatedTokenRepository;
     @NonFinal
     protected static final String SIGNER_KEY =
             "p7cHINXNIOg7JEYDrVOYKzMREMuZtAtuZzWsz00TyCX+CikSXSjoLImFBx6ZrsJ6";
@@ -110,7 +102,7 @@ public class AuthenticationService {
                                                 User.builder()
                                                         .username(userInfo.getName())
                                                         .email(userInfo.getEmail())
-                                                        .role(Role.USER)
+                                                        .role(SystemRole.USER)
                                                         .status(UserStatus.ACTIVE)
                                                         .createdAt(Instant.now())
                                                         .build()));
@@ -124,11 +116,6 @@ public class AuthenticationService {
                 userRepository
                         .findByUsername(request.getUsername())
                         .orElseThrow(() -> new WebException(ErrorCode.WRONG_CREDENTIALS));
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
-        if (!authenticated) {
-            throw new WebException(ErrorCode.WRONG_CREDENTIALS);
-        }
         if (user.getStatus() != null && user.getStatus() != UserStatus.ACTIVE) {
             throw new WebException(ErrorCode.BLOCKED_USER);
         }
@@ -231,10 +218,8 @@ public class AuthenticationService {
                     User.builder()
                             .username(name)
                             .email(email)
-                            .role(Role.USER)
-                            .plan(UserPlan.FREE)
+                            .role(SystemRole.USER)
                             .status(UserStatus.ACTIVE)
-                            .password("12345")
                             .createdAt(Instant.now())
                             .build();
             userRepository.save(newUser);
