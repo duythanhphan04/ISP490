@@ -1,4 +1,4 @@
-package com.devteria.identity_service.response;
+package com.devteria.identity_service.dto.response;
 
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;

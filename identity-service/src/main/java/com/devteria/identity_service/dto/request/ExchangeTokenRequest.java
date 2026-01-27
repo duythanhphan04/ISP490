@@ -1,4 +1,4 @@
-package com.devteria.identity_service.response;
+package com.devteria.identity_service.dto.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -11,10 +11,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ExchangeTokenResponse {
-  String accessToken;
-  Long expiresIn;
-  String refreshToken;
-  String scope;
-  String tokenType;
+public class ExchangeTokenRequest {
+  String code;
+  String clientId;
+  String clientSecret;
+  String redirectUri;
+  String grantType;
 }

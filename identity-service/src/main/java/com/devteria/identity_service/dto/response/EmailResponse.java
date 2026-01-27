@@ -1,4 +1,4 @@
-package com.devteria.identity_service.dto;
+package com.devteria.identity_service.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,6 +8,9 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RefrestTokenRequest {
-  String token;
+public class EmailResponse {
+  String toEmail;
+  String subject;
+  String body;
+  boolean sent;
 }

@@ -2,6 +2,7 @@ package com.devteria.identity_service.entity;
 
 import com.devteria.identity_service.enums.GroupMemberStatus;
 import com.devteria.identity_service.enums.GroupStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -25,16 +26,18 @@ public class UserGroup {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     Group group;
 
     @Column(name = "created_at")
     Instant added_at;
 
-    @Column(name = "is_delete", length = 255)
+    @Column(name = "is_delete")
     @Enumerated(EnumType.STRING)
     GroupMemberStatus status;
 }

@@ -1,7 +1,7 @@
 package com.devteria.identity_service.repository.httpclient;
 
-import com.devteria.identity_service.dto.ExchangeTokenRequest;
-import com.devteria.identity_service.response.ExchangeTokenResponse;
+import com.devteria.identity_service.dto.request.ExchangeTokenRequest;
+import com.devteria.identity_service.dto.response.ExchangeTokenResponse;
 import feign.QueryMap;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;

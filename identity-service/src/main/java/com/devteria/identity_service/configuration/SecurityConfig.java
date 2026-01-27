@@ -34,10 +34,6 @@ import java.util.Arrays;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-
-    protected static final String SIGNER_KEY =
-            "p7cHINXNIOg7JEYDrVOYKzMREMuZtAtuZzWsz00TyCX+CikSXSjoLImFBx6ZrsJ6";
-
     @Autowired private CustomJwtDecoder customJwtDecoder;
     @Autowired private AuthenticationService authenticationService;
     @Autowired private OAuth2AuthorizedClientService authorizedClientService;
@@ -74,9 +70,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * ✅ FilterChain #1: Dành cho OAuth2 Login (Google, v.v.)
-     */
+
     @Bean
     @Order(1)
     public SecurityFilterChain oauth2SecurityFilterChain(HttpSecurity http) throws Exception {
@@ -90,13 +84,6 @@ public class SecurityConfig {
                             OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
                             String email = oAuth2User.getAttribute("email");
                             String name = oAuth2User.getAttribute("name");
-                            if(email == null || !email.endsWith("fpt.edu.vn") ) {
-                                response.sendError(
-                                        HttpServletResponse.SC_BAD_REQUEST,
-                                        "Email or Name not found from OAuth2 provider"
-                                );
-                                return;
-                            }
                             // Tạo hoặc lấy user từ DB
                             User user = authenticationService.findOrCreateUser(email, name);
 
@@ -113,10 +100,13 @@ public class SecurityConfig {
                             String appToken = authenticationService.generateToken(user);
 
                             // Redirect lại frontend
-                            response.sendRedirect(
-                                    "https://veganlife.social/oauth2/success?appToken=" + appToken
-                                            + "&googleToken=" + googleAccessToken
+                            String redirectUrl = String.format(
+                                    "http://localhost:8080/oauth2-redirect?appToken=%s&googleToken=%s", // URL Frontend
+                                    appToken,
+                                    googleAccessToken
                             );
+
+                            response.sendRedirect(redirectUrl);
                         })
                 );
 

@@ -1,6 +1,6 @@
 package com.devteria.identity_service.configuration;
 
-import com.devteria.identity_service.dto.IntrospectRequest;
+import com.devteria.identity_service.dto.request.IntrospectRequest;
 import com.devteria.identity_service.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 import java.text.ParseException;

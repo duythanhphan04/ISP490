@@ -1,6 +1,6 @@
 package com.devteria.identity_service.service;
 
-import com.devteria.identity_service.dto.*;
+import com.devteria.identity_service.dto.request.*;
 import com.devteria.identity_service.entity.InvalidatedToken;
 import com.devteria.identity_service.entity.User;
 import com.devteria.identity_service.enums.SystemRole;
@@ -11,8 +11,8 @@ import com.devteria.identity_service.repository.httpclient.InvalidatedTokenRepos
 import com.devteria.identity_service.repository.httpclient.OutBoundIdentityClient;
 import com.devteria.identity_service.repository.httpclient.OutboundUserClient;
 import com.devteria.identity_service.repository.httpclient.UserRepository;
-import com.devteria.identity_service.response.AuthenticationResponse;
-import com.devteria.identity_service.response.IntrospectResponse;
+import com.devteria.identity_service.dto.response.AuthenticationResponse;
+import com.devteria.identity_service.dto.response.IntrospectResponse;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -180,8 +180,7 @@ public class AuthenticationService {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
         JWTClaimsSet claimsSet =
                 new JWTClaimsSet.Builder()
-                        .subject(user.getUsername())
-                        .issuer("devteria.com")
+                        .subject(user.getUser_id())
                         .issueTime(new Date())
                         .expirationTime(
                                 new Date(Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()))

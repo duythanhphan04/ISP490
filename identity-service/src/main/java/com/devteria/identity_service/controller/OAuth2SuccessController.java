@@ -1,6 +1,6 @@
 package com.devteria.identity_service.controller;
 
-import com.devteria.identity_service.dto.ApiResponse;
+import com.devteria.identity_service.dto.response.ApiResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;

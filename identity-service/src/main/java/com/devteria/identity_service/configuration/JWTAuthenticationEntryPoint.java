@@ -1,6 +1,6 @@
 package com.devteria.identity_service.configuration;
 
-import com.devteria.identity_service.dto.ApiResponse;
+import com.devteria.identity_service.dto.response.ApiResponse;
 import com.devteria.identity_service.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;

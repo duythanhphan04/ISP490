@@ -1,8 +1,12 @@
 package com.devteria.identity_service.controller;
 
-import com.devteria.identity_service.dto.*;
-import com.devteria.identity_service.response.AuthenticationResponse;
-import com.devteria.identity_service.response.IntrospectResponse;
+import com.devteria.identity_service.dto.request.AuthenticationRequest;
+import com.devteria.identity_service.dto.request.IntrospectRequest;
+import com.devteria.identity_service.dto.request.LogoutRequest;
+import com.devteria.identity_service.dto.request.RefrestTokenRequest;
+import com.devteria.identity_service.dto.response.ApiResponse;
+import com.devteria.identity_service.dto.response.AuthenticationResponse;
+import com.devteria.identity_service.dto.response.IntrospectResponse;
 import com.devteria.identity_service.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 import io.swagger.v3.oas.annotations.Operation;

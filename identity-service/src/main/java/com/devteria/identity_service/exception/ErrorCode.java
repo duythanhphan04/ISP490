@@ -6,22 +6,23 @@ import org.springframework.http.HttpStatusCode;
 
 @Getter
 public enum ErrorCode {
+
   USER_NOT_FOUND(1001, "User not found", HttpStatus.BAD_REQUEST),
-  COACH_NOT_FOUND(1013, "Coach not found", HttpStatus.BAD_REQUEST),
   USERNAME_ALREADY_EXISTS(1002, "Username already exists", HttpStatus.NOT_FOUND),
-  INVALID_PASSWORD(1003, "Invalid password", HttpStatus.BAD_REQUEST),
-  INVALID_FIRST_NAME(1004, "Invalid first name", HttpStatus.BAD_REQUEST),
-  INVALID_LAST_NAME(1005, "Invalid last name", HttpStatus.BAD_REQUEST),
-  INVALID_DOB(1006, "Invalid date of birth", HttpStatus.BAD_REQUEST),
-  INVALID_USERNAME(1007, " Username must be at least 3 characters", HttpStatus.BAD_REQUEST),
-  INVALID_PASSWORD_LENGTH(1008, "Password must be at least 8 characters", HttpStatus.BAD_REQUEST),
-  INVALID_KEY(1009, "Invalid message key", HttpStatus.BAD_REQUEST),
-  UNAUTHENTICATED(1010, "Unauthenticated", HttpStatus.UNAUTHORIZED),
-  UNCATEGORIZED(1011, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
-  WRONG_CREDENTIALS(1012, "Incorrect Username or Password", HttpStatus.FORBIDDEN),
-  BLOCKED_USER(1014, "User is blocked", HttpStatus.FORBIDDEN),
-  UNAUTHORIZED(1015, "Unauthorized: Access is denied", HttpStatus.FORBIDDEN),
-  INVALID_ROLE(1016, "Invalid role", HttpStatus.FORBIDDEN);
+  INVALID_KEY(1003, "Invalid message key", HttpStatus.BAD_REQUEST),
+  UNAUTHENTICATED(1004, "Unauthenticated", HttpStatus.UNAUTHORIZED),
+  UNCATEGORIZED(1005, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
+  BLOCKED_USER(1006, "User is blocked", HttpStatus.FORBIDDEN),
+  UNAUTHORIZED(1007, "Unauthorized: Access is denied", HttpStatus.FORBIDDEN),
+  INVALID_ROLE(1008, "Invalid role", HttpStatus.FORBIDDEN),
+  GROUP_NOT_FOUND(1009, "Group not found", HttpStatus.BAD_REQUEST),
+  WRONG_CREDENTIALS(1010, "Wrong credentials", HttpStatus.UNAUTHORIZED),
+  USER_NOT_IN_GROUP(1011, "User not in group", HttpStatus.BAD_REQUEST),
+    MEMBER_NOT_DELETED_YET (1013, "Member not deleted yet from group", HttpStatus.BAD_REQUEST),
+    MEMBER_ALREADY_DELETED(1012, "Member already deleted from group", HttpStatus.BAD_REQUEST);
+
+
+
   private final int code;
   private final String message;
   private final HttpStatusCode httpStatusCode;

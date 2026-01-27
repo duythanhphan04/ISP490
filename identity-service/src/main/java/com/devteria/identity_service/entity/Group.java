@@ -40,7 +40,7 @@ public class Group {
 
     @Column(name = "group_type", length = 255)
     @Enumerated(EnumType.STRING)
-    GroupType group_type;
+    GroupType groupType;
 
     @Column(name = "group_status", length = 255)
     @Enumerated(EnumType.STRING)

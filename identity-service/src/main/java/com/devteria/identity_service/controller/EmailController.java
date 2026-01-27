@@ -1,8 +1,8 @@
 package com.devteria.identity_service.controller;
 
-import com.devteria.identity_service.dto.ApiResponse;
+import com.devteria.identity_service.dto.response.ApiResponse;
 import com.devteria.identity_service.entity.MailBody;
-import com.devteria.identity_service.response.EmailResponse;
+import com.devteria.identity_service.dto.response.EmailResponse;
 import com.devteria.identity_service.service.EmailSenderService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.mail.MessagingException;
