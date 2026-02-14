@@ -2,9 +2,7 @@ package com.devteria.identity_service.controller;
 
 import com.devteria.identity_service.dto.response.ApiResponse;
 import com.devteria.identity_service.entity.User;
-import com.devteria.identity_service.enums.EventLog;
 import com.devteria.identity_service.enums.SystemRole;
-import com.devteria.identity_service.enums.TargetEntity;
 import com.devteria.identity_service.enums.UserStatus;
 import com.devteria.identity_service.service.SystemAuditLogService;
 import com.devteria.identity_service.service.UserService;
@@ -43,6 +41,15 @@ public class UserController {
                 .build();
 
     }
+    @DeleteMapping("/{userID}")
+    @Operation(summary = "Delete user by ID")
+    ApiResponse<User> deleteUserByID(@PathVariable String userID) {
+        return ApiResponse.<User>builder()
+                .data(userService.deleteUser(userID))
+                .message("User deleted successfully")
+                .code(1000)
+                .build();
+    }
     @GetMapping("/my-profile")
     @Operation(summary = "Get logged-in user's profile")
     ApiResponse<User> getLoggedInUserProfile() {
@@ -56,8 +63,6 @@ public class UserController {
     @PutMapping("/soft-delete/{userID}")
     @Operation(summary = "Soft delete user by ID")
     ApiResponse<User> softDeleteUserByID(@PathVariable String userID) {
-        User loggedInUser = userService.getLoggedInUser();
-        systemAuditLogService.logEvent(loggedInUser, EventLog.USER_SOFT_DELETED, TargetEntity.USER, userID);
         return ApiResponse.<User>builder()
                 .data(userService.updateUserStatus(userID, UserStatus.INACTIVE))
                 .message("User soft deleted successfully")
@@ -67,8 +72,6 @@ public class UserController {
     @PutMapping("/restore/{userID}")
     @Operation(summary = "Restore soft-deleted user by ID")
     ApiResponse<User> restoreUserByID(@PathVariable String userID) {
-        User loggedInUser = userService.getLoggedInUser();
-        systemAuditLogService.logEvent(loggedInUser, EventLog.USER_RESTORED, TargetEntity.USER, userID);
         return ApiResponse.<User>builder()
                 .data(userService.updateUserStatus(userID, UserStatus.ACTIVE))
                 .message("User restored successfully")
@@ -90,6 +93,15 @@ public class UserController {
         return ApiResponse.<List<User>>builder()
                 .data(userService.getUserByStatus(status))
                 .message("Users fetched successfully")
+                .code(1000)
+                .build();
+    }
+    @GetMapping("/email/{email}")
+    @Operation(summary = "Get user by email")
+    ApiResponse<User> getUserByEmail(@PathVariable String email) {
+        return ApiResponse.<User>builder()
+                .data(userService.getUserByEmail(email))
+                .message("User fetched successfully")
                 .code(1000)
                 .build();
     }

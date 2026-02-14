@@ -1,4 +1,4 @@
-package com.devteria.identity_service.repository.httpclient;
+package com.devteria.identity_service.repository;
 
 import com.devteria.identity_service.entity.Group;
 import com.devteria.identity_service.entity.User;
@@ -17,4 +17,6 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, String> {
     List<Group> findAllGroupsByUserId(@Param("userId") String userId);
     @Query("SELECT ug FROM UserGroup ug WHERE ug.user.user_id = :userId AND ug.group.group_id = :groupId")
     Optional<UserGroup> findByUserIdAndGroupId(@Param("userId") String userId, @Param("groupId") String groupId);
+
+    boolean existsByUserAndGroup(User user, Group group);
 }

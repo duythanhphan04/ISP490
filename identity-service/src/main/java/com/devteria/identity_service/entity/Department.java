@@ -1,5 +1,6 @@
 package com.devteria.identity_service.entity;
 
+import com.devteria.identity_service.annotation.AuditableField;
 import com.devteria.identity_service.enums.DashboardCategory;
 import com.devteria.identity_service.enums.DepartmentStatus;
 import jakarta.persistence.*;
@@ -23,10 +24,12 @@ public class Department {
 
     @Size(max = 255)
     @Column(name = "department_name", nullable = false)
+    @AuditableField("department_name")
     String department_name;
 
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "manager", nullable = false)
+    @AuditableField("manager")
     User manager;
 
     @Column(name = "status", length = 255)

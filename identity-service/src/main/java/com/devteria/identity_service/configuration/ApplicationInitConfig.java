@@ -4,7 +4,7 @@ import com.devteria.identity_service.entity.User;
 import com.devteria.identity_service.enums.SystemRole;
 import com.devteria.identity_service.enums.UserStatus;
 import java.time.Instant;
-import com.devteria.identity_service.repository.httpclient.UserRepository;
+import com.devteria.identity_service.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

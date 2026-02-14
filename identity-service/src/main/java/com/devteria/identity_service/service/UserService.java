@@ -2,16 +2,19 @@ package com.devteria.identity_service.service;
 
 import com.devteria.identity_service.dto.request.UserCreationRequest;
 import com.devteria.identity_service.entity.User;
+import com.devteria.identity_service.enums.EventLog;
 import com.devteria.identity_service.enums.SystemRole;
+import com.devteria.identity_service.enums.TargetEntity;
 import com.devteria.identity_service.enums.UserStatus;
 import com.devteria.identity_service.exception.ErrorCode;
 import com.devteria.identity_service.exception.WebException;
-import com.devteria.identity_service.repository.httpclient.UserRepository;
+import com.devteria.identity_service.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -21,6 +24,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
     UserRepository userRepository;
+    SystemAuditLogService systemAuditLogService;
     public User createUser(UserCreationRequest userCreationRequest) {
         User user = User.builder()
                 .username(userCreationRequest.getUser_name())
@@ -50,20 +54,38 @@ public class UserService {
         }
         return null;
     }
+    @Transactional
     public User deleteUser(String userID) {
         User user = getUserByID(userID);
-        if(user != null) {
-            userRepository.deleteById(userID);
+        User loggedInUser = getLoggedInUser();
+        if(loggedInUser.getUser_id().equals(userID)) {
+            throw new WebException(ErrorCode.CANNOT_DELETE_OWN_ACCOUNT);
         }
+        userRepository.deleteById(userID);
+        systemAuditLogService.logEvent(loggedInUser, EventLog.USER_DELETED, TargetEntity.USER, userID);
         return user;
     }
-    public User updateUserStatus(String userID, UserStatus userStatus) {
+    @Transactional
+    public User updateUserStatus(String userID, UserStatus newStatus) {
         User user = getUserByID(userID);
-        if(user != null) {
-            user.setStatus(userStatus);
-            return userRepository.save(user);
+
+        if (user.getStatus() == newStatus) {
+            return user;
         }
-        return null;
+        user.setStatus(newStatus);
+        userRepository.save(user);
+
+        EventLog eventLog = (newStatus == UserStatus.INACTIVE)
+                ? EventLog.USER_SOFT_DELETED
+                : EventLog.USER_RESTORED;
+
+        systemAuditLogService.logEvent(
+                getLoggedInUser(),
+                eventLog,
+                TargetEntity.USER,
+                userID
+        );
+        return user;
     }
     public List<User> getUserByStatus(UserStatus status) {
         return userRepository.findByStatus(status);
@@ -71,5 +93,4 @@ public class UserService {
     public List<User> getUsersByRole(SystemRole role) {
         return userRepository.findByRole(role);
     }
-
 }

@@ -1,6 +1,8 @@
 package com.devteria.identity_service.entity;
 
 import com.devteria.identity_service.enums.DashboardCategory;
+import com.devteria.identity_service.enums.DashboardStatus;
+import com.devteria.identity_service.enums.DepartmentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -36,6 +38,14 @@ public class Dashboard {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
     User createdBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "update_by", nullable = true)
+    User updatedBy;
+
+    @Column(name = "status", length = 255)
+    @Enumerated(EnumType.STRING)
+    DashboardStatus status;
 
     @Column(name = "created_at")
     Instant createdAt;

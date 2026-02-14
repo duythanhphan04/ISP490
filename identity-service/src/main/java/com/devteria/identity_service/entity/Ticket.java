@@ -46,6 +46,10 @@ public class Ticket {
     @JoinColumn(name = "assigned_staff", nullable = false)
     User assigned_staff;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "approver", nullable = false)
+    User approver;
+
     @Column(name = "created_at")
     Instant createdAt;
 

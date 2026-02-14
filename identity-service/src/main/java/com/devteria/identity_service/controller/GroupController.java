@@ -34,8 +34,6 @@ public class GroupController {
     @Operation(summary = "Create a new group")
     public ApiResponse<Group> createGroup(@RequestBody @Valid GroupCreationRequest groupCreationRequest) {
         Group group = groupService.createGroup(groupCreationRequest);
-        User loggedInUser = userService.getLoggedInUser();
-        systemAuditLogService.logEvent(loggedInUser, EventLog.GROUP_CREATED, TargetEntity.GROUP, group.getGroup_id());
         return ApiResponse.<Group>builder()
                 .data(group)
                 .message("Group created successfully")
@@ -86,8 +84,6 @@ public class GroupController {
     @Operation(summary = "Soft delete group by ID")
     public ApiResponse<Group> softDeleteGroup(@PathVariable String groupID) {
         Group group = groupService.setGroupStatus(groupID, GroupStatus.INACTIVE);
-        User loggedInUser = userService.getLoggedInUser();
-        systemAuditLogService.logEvent(loggedInUser, EventLog.GROUP_SOFT_DELETED, TargetEntity.GROUP, group.getGroup_id());
         return ApiResponse.<Group>builder()
                 .data(group)
                 .message("Group soft deleted successfully")
@@ -98,8 +94,6 @@ public class GroupController {
     @Operation(summary = "Delete group by ID")
     public ApiResponse<Group> deleteGroup(@PathVariable String groupID) {
         Group group = groupService.deleteGroup(groupID);
-        User loggedInUser = userService.getLoggedInUser();
-        systemAuditLogService.logEvent(loggedInUser, EventLog.GROUP_DELETED, TargetEntity.GROUP, group.getGroup_id());
         return ApiResponse.<Group>builder()
                 .data(group)
                 .message("Group deleted successfully")
@@ -116,6 +110,7 @@ public class GroupController {
                 .code(1000)
                 .build();
     }
+
     @GetMapping("/members/{groupID}")
     @Operation(summary = "Get group members by group ID")
     public ApiResponse<Integer> getGroupMembers(@PathVariable String groupID) {
@@ -130,8 +125,6 @@ public class GroupController {
     @Operation(summary = "Add member to group")
     public ApiResponse<UserGroup> addMemberToGroup(@PathVariable String groupID, @PathVariable String userID) {
         UserGroup userGroup = userGroupService.addUserToGroup(userID,groupID);
-        User loggedInUser = userService.getLoggedInUser();
-        systemAuditLogService.logEvent(loggedInUser, EventLog.USER_ADDED_TO_GROUP, TargetEntity.GROUP, groupID);
         return ApiResponse.<UserGroup>builder()
                 .data(userGroup)
                 .message("User added to group successfully")
@@ -163,8 +156,6 @@ public class GroupController {
     public ApiResponse<UserGroup> removeMemberFromGroup(@PathVariable String groupID, @PathVariable String userID) {
         UserGroup userGroup = userGroupService.getUserGroupByUserIDAndGroupID(userID,groupID);
         userGroupService.setUserGroupStatus(userGroup.getId(),GroupMemberStatus.ACTIVE);
-        User loggedInUser = userService.getLoggedInUser();
-        systemAuditLogService.logEvent(loggedInUser, EventLog.USER_REMOVED_FROM_GROUP, TargetEntity.USER, userID);
         return ApiResponse.<UserGroup>builder()
                 .data(userGroup)
                 .message("User removed from group successfully")
@@ -176,8 +167,6 @@ public class GroupController {
     public ApiResponse<UserGroup> restoreMemberToGroup(@PathVariable String groupID, @PathVariable String userID) {
         UserGroup userGroup = userGroupService.getUserGroupByUserIDAndGroupID(userID, groupID);
         userGroupService.setUserGroupStatus(userGroup.getId(), GroupMemberStatus.INACTIVE);
-        User loggedInUser = userService.getLoggedInUser();
-        systemAuditLogService.logEvent(loggedInUser, EventLog.USER_RESTORED_TO_GROUP, TargetEntity.USER, userID);
         return ApiResponse.<UserGroup>builder()
                 .data(userGroup)
                 .message("User restored to group successfully")

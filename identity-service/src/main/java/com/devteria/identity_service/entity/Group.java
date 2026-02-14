@@ -1,9 +1,8 @@
 package com.devteria.identity_service.entity;
 
+import com.devteria.identity_service.annotation.AuditableField;
 import com.devteria.identity_service.enums.GroupStatus;
 import com.devteria.identity_service.enums.GroupType;
-import com.devteria.identity_service.enums.SystemRole;
-import com.devteria.identity_service.enums.UserStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -27,11 +26,13 @@ public class Group {
     String group_id;
 
     @NotNull
-    @Column(name = "user_name", nullable = false)
+    @Column(name = "group_name", nullable = false)
+    @AuditableField("group_name")
     String group_name;
 
     @NotNull
     @Column(name = "description", nullable = false)
+    @AuditableField("description")
     String description;
 
     @NotNull
@@ -40,6 +41,7 @@ public class Group {
 
     @Column(name = "group_type", length = 255)
     @Enumerated(EnumType.STRING)
+    @AuditableField("group_type")
     GroupType groupType;
 
     @Column(name = "group_status", length = 255)
