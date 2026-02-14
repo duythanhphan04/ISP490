@@ -1,5 +1,6 @@
 package com.devteria.identity_service.entity;
 
+import com.devteria.identity_service.annotation.AuditableField;
 import com.devteria.identity_service.enums.DashboardCategory;
 import com.devteria.identity_service.enums.DashboardStatus;
 import com.devteria.identity_service.enums.DepartmentStatus;
@@ -26,13 +27,16 @@ public class Dashboard {
 
     @Size(max = 255)
     @Column(name = "dashboard_name", nullable = false)
+    @AuditableField("dashboard_name")
     String dashboard_name;
 
     @Column(name = "url_path", nullable = false)
+    @AuditableField("url_path")
     String url_path;
 
     @Column(name = "category", length = 255)
     @Enumerated(EnumType.STRING)
+    @AuditableField("category")        
     DashboardCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)
