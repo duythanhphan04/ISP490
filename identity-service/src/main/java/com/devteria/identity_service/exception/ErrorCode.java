@@ -29,7 +29,11 @@ public enum ErrorCode {
     GROUP_ALREADY_HAS_DASHBOARD_ACCESS (1021, "Group already has access to the dashboard", HttpStatus.BAD_REQUEST),
     GROUP_DASHBOARD_ACCESS_NOT_FOUND (1022, "Group dashboard access not found", HttpStatus.BAD_REQUEST),
     GROUP_DASHBOARD_ACCESS_ALREADY_GRANTED (1023, "Group already has dashboard access granted", HttpStatus.BAD_REQUEST),
-    GROUP_DASHBOARD_ACCESS_ALREADY_REVOKED (1024, "Group dashboard access already revoked", HttpStatus.BAD_REQUEST);
+    GROUP_DASHBOARD_ACCESS_ALREADY_REVOKED (1024, "Group dashboard access already revoked", HttpStatus.BAD_REQUEST),
+    TICKET_NOT_FOUND(1025, "Ticket not found", HttpStatus.BAD_REQUEST),
+    MANAGER_NOT_FOUND (1026, "Manager not found for the user's department", HttpStatus.BAD_REQUEST),
+    TICKET_NOT_OPEN (1027, "Ticket is not open", HttpStatus.BAD_REQUEST),
+    INVALID_TICKET_STATUS_UPDATE (1028, "Invalid ticket status update", HttpStatus.BAD_REQUEST);
 
 
 

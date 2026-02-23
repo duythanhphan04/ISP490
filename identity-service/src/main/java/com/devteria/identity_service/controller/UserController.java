@@ -1,5 +1,6 @@
 package com.devteria.identity_service.controller;
 
+import com.devteria.identity_service.dto.request.UserUpdateRequest;
 import com.devteria.identity_service.dto.response.ApiResponse;
 import com.devteria.identity_service.entity.User;
 import com.devteria.identity_service.enums.SystemRole;
@@ -7,6 +8,7 @@ import com.devteria.identity_service.enums.UserStatus;
 import com.devteria.identity_service.service.SystemAuditLogService;
 import com.devteria.identity_service.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -105,4 +107,14 @@ public class UserController {
                 .code(1000)
                 .build();
     }
+    @PutMapping("/{userID}/department/{departmentID}")
+    @Operation(summary = "Add user to department")
+    ApiResponse<User> addUserToDepartment(@PathVariable String userID, @PathVariable String departmentID) {
+        return ApiResponse.<User>builder()
+                .data(userService.addUserToDepartment(userID, departmentID))
+                .message("User's department updated successfully")
+                .code(1000)
+                .build();
+    }
+
 }

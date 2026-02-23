@@ -1,5 +1,6 @@
 package com.devteria.identity_service.entity;
 
+import com.devteria.identity_service.annotation.AuditableField;
 import com.devteria.identity_service.enums.GroupDashboardStatus;
 import com.devteria.identity_service.enums.RequestType;
 import com.devteria.identity_service.enums.TicketStatus;
@@ -40,10 +41,12 @@ public class Ticket {
 
     @Column(name = "status", length = 255)
     @Enumerated(EnumType.STRING)
+    @AuditableField("Ticket Status")
     TicketStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assigned_staff", nullable = false)
+    @JoinColumn(name = "assigned_staff", nullable = true)
+    @AuditableField("Assigned Staff")
     User assigned_staff;
 
     @ManyToOne(fetch = FetchType.LAZY)

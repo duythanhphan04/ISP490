@@ -1,5 +1,6 @@
 package com.devteria.identity_service.entity;
 
+import com.devteria.identity_service.annotation.AuditableField;
 import com.devteria.identity_service.enums.SystemRole;
 import com.devteria.identity_service.enums.UserStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -28,21 +29,26 @@ public class User {
 
     @NotNull
     @Column(name = "user_name", nullable = false)
+    @AuditableField("username")
     String username;
 
     @Size(max = 255)
     @Column(name = "email")
+    @AuditableField("email")
     String email;
 
     @Column(name = "system_role", length = 255)
     @Enumerated(EnumType.STRING)
+    @AuditableField("role")
     SystemRole role;
 
     @Column(name = "created_at")
     Instant createdAt;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "department_id", referencedColumnName = "department_id")
+    @AuditableField("department")
+    @JsonIgnoreProperties("manager")
     Department department;
 
     @Column(name = "status", length = 255)

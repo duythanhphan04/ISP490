@@ -17,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -98,6 +99,7 @@ public class DashboardService {
                 .dashboard_name(dashboard.getDashboard_name())
                 .url_path(dashboard.getUrl_path())
                 .category(dashboard.getCategory())
+                .createdAt(Instant.now())
                 .createdBy(dashboard.getCreatedBy())
                 .status(dashboard.getStatus())
                 .build();

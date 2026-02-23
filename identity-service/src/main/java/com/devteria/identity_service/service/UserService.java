@@ -1,6 +1,8 @@
 package com.devteria.identity_service.service;
 
 import com.devteria.identity_service.dto.request.UserCreationRequest;
+import com.devteria.identity_service.dto.request.UserUpdateRequest;
+import com.devteria.identity_service.entity.Department;
 import com.devteria.identity_service.entity.User;
 import com.devteria.identity_service.enums.EventLog;
 import com.devteria.identity_service.enums.SystemRole;
@@ -8,10 +10,14 @@ import com.devteria.identity_service.enums.TargetEntity;
 import com.devteria.identity_service.enums.UserStatus;
 import com.devteria.identity_service.exception.ErrorCode;
 import com.devteria.identity_service.exception.WebException;
+import com.devteria.identity_service.repository.DepartmentRepository;
 import com.devteria.identity_service.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +29,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
+    private static final Log log = LogFactory.getLog(UserService.class);
     UserRepository userRepository;
     SystemAuditLogService systemAuditLogService;
+    DepartmentRepository departmentRepository;
     public User createUser(UserCreationRequest userCreationRequest) {
         User user = User.builder()
                 .username(userCreationRequest.getUser_name())
@@ -92,5 +100,34 @@ public class UserService {
     }
     public List<User> getUsersByRole(SystemRole role) {
         return userRepository.findByRole(role);
+    }
+    public User addUserToDepartment(String userID, String departmentID) {
+       User user = getUserByID(userID);
+       Department department = departmentRepository.findById(departmentID).orElseThrow( () -> new WebException(ErrorCode.DEPARTMENT_NOT_FOUND));
+       user.setDepartment(department);
+       userRepository.save(user);
+       systemAuditLogService.logEvent(
+               getLoggedInUser(),
+               EventLog.USER_ADDED_TO_DEPARTMENT,
+               TargetEntity.USER,
+               departmentID
+       );
+       return user;
+    }
+    public Department getUserDepartment(String userID) {
+        User user = getUserByID(userID);
+        return user.getDepartment();
+    }
+    public User getManagerByUserID(String userID) {
+        User user = getUserByID(userID);
+        Department department = user.getDepartment();
+        if(department == null) {
+            throw new WebException(ErrorCode.MANAGER_NOT_FOUND);
+        }
+        User manager = department.getManager();
+        if(manager == null) {
+            throw new WebException(ErrorCode.MANAGER_NOT_FOUND);
+        }
+        return manager;
     }
 }

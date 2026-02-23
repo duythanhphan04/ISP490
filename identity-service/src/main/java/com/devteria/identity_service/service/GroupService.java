@@ -52,7 +52,7 @@ public class GroupService {
         groupRepository.save(group);
         systemAuditLogService.logEvent(
                 loggedInUser,
-                EventLog.GROUP_CREATED, // Bạn nhớ thêm Enum này nhé
+                EventLog.GROUP_CREATED,
                 TargetEntity.GROUP,
                 group.getGroup_id()
         );
@@ -64,10 +64,10 @@ public class GroupService {
         if (group.getMember() > 0) {
             throw new WebException(ErrorCode.GROUP_CANNOT_DELETE_HAS_MEMBERS);
         }
-        groupRepository.delete(group); // Dùng delete(entity) thay vì deleteById
+        groupRepository.delete(group);
         systemAuditLogService.logEvent(
                 userService.getLoggedInUser(),
-                EventLog.GROUP_DELETED, // Nhớ thêm Enum này
+                EventLog.GROUP_DELETED,
                 TargetEntity.GROUP,
                 groupID
         );
@@ -94,30 +94,6 @@ public class GroupService {
             log.error("Failed to log group update: " + e.getMessage());
         }
         return updatedGroup;
-    }
-    public Group incrementMemberCount(String groupID) {
-        Group group = getGroupByID(groupID);
-        if(group != null) {
-            group.setMember(group.getMember() + 1);
-            return groupRepository.save(group);
-        }
-        return null;
-    }
-    public  Group decreaseMemberCount(String groupID) {
-        Group group = getGroupByID(groupID);
-        if(group != null) {
-            group.setMember(group.getMember() - 1);
-            return groupRepository.save(group);
-        }
-        return null;
-    }
-    public Group updateMemberCount(String groupID, int count) {
-        Group group = getGroupByID(groupID);
-        if(group != null) {
-            group.setMember(count);
-            return groupRepository.save(group);
-        }
-        return null;
     }
     public int getMemberCount(String groupID) {
         Group group = getGroupByID(groupID);
