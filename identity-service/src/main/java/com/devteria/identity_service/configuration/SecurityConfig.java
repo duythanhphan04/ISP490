@@ -101,7 +101,7 @@ public class SecurityConfig {
 
                             // Redirect lại frontend
                             String redirectUrl = String.format(
-                                    "http://localhost:8080/oauth2-redirect?appToken=%s&googleToken=%s", // URL Frontend
+                                    "http://159.223.36.202:8080/oauth2-redirect?appToken=%s&googleToken=%s", // URL Frontend
                                     appToken,
                                     googleAccessToken
                             );
