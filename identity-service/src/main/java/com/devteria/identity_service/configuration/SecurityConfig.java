@@ -127,7 +127,7 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("https://veganlife.social", "http://veganlife.social"));
+        config.setAllowedOrigins(Arrays.asList("https://veganlife.social", "http://veganlife.social", "http://localhost:5173"));
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
