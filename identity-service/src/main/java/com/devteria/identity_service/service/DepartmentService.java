@@ -33,6 +33,12 @@ public class DepartmentService {
                 .manager(userService.getUserByID(request.getManagerId()))
                 .status(DepartmentStatus.ACTIVE)
                 .build();
+        systemAuditLogService.logEvent(
+                userService.getLoggedInUser(),
+                EventLog.DEPARTMENT_CREATED,
+                TargetEntity.DEPARTMENT,
+                department.getDepartment_id()
+        );
         return departmentRepository.save(department);
     }
     public Department getDepartmentByName(String departmentName) {

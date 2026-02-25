@@ -85,4 +85,10 @@ public class SystemAuditLogService {
         }
         return value.toString();
     }
+    public List<SystemAuditLogs> getAllLogs() {
+        return systemAuditLogRepository.findAll();
+    }
+    public List<SystemAuditLogsDetail> getLogDetails(String logId) {
+        return systemAuditLogDetailRepository.findByLogID(logId);
+    }
 }
