@@ -79,7 +79,7 @@ public class GroupService {
         BeanUtils.copyProperties(group, oldGroupSnapshot);
         group.setGroup_name(groupUpdateRequest.getGroup_name());
         group.setDescription(groupUpdateRequest.getDescription());
-        group.setGroupType(groupUpdateRequest.getGroup_type());
+        group.setGroupType(groupUpdateRequest.getGroupType());
         Group updatedGroup = groupRepository.save(group);
         try{
             systemAuditLogService.logEntityUpdate(

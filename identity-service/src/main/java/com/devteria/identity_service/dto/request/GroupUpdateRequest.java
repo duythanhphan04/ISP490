@@ -18,5 +18,5 @@ public class GroupUpdateRequest {
     @NotBlank(message = "Description is required")
     @Size(max = 255, message = "Description must be less than 256 characters")
     String description;
-    GroupType group_type;
+    GroupType groupType;
 }
