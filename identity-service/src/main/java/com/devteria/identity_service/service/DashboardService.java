@@ -109,8 +109,8 @@ public class DashboardService {
         if(request.getUrl_path() != null) {
             dashboard.setUrl_path(request.getUrl_path());
         }
-        if(request.getDashboard_category() != null) {
-            dashboard.setCategory(request.getDashboard_category());
+        if(request.getCategory() != null) {
+            dashboard.setCategory(request.getCategory());
         }
         dashboard.setUpdatedBy(loggedInUser);
         Dashboard updatedDashboard = dashboardRepository.save(dashboard);

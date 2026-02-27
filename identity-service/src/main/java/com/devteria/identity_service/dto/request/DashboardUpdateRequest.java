@@ -12,5 +12,5 @@ import lombok.experimental.FieldDefaults;
 public class DashboardUpdateRequest {
     String dashboard_name;
     String url_path;
-    DashboardCategory dashboard_category;
+    DashboardCategory category;
 }
