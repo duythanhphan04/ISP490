@@ -25,10 +25,6 @@ public class GroupController {
     @Autowired
     GroupService groupService;
     @Autowired
-    SystemAuditLogService systemAuditLogService;
-    @Autowired
-    UserService userService;
-    @Autowired
     UserGroupService userGroupService;
     @PostMapping
     @Operation(summary = "Create a new group")

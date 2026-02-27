@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DashboardUpdateRequest {
-    String dashboardName;
-    String urlPath;
-    DashboardCategory dashboardCategory;
+    String dashboard_name;
+    String url_path;
+    DashboardCategory dashboard_category;
 }

@@ -103,14 +103,14 @@ public class DashboardService {
                 .createdBy(dashboard.getCreatedBy())
                 .status(dashboard.getStatus())
                 .build();
-        if(request.getDashboardName() != null) {
-            dashboard.setDashboard_name(request.getDashboardName());
+        if(request.getDashboard_name() != null) {
+            dashboard.setDashboard_name(request.getDashboard_name());
         }
-        if(request.getUrlPath() != null) {
-            dashboard.setUrl_path(request.getUrlPath());
+        if(request.getUrl_path() != null) {
+            dashboard.setUrl_path(request.getUrl_path());
         }
-        if(request.getDashboardCategory() != null) {
-            dashboard.setCategory(request.getDashboardCategory());
+        if(request.getDashboard_category() != null) {
+            dashboard.setCategory(request.getDashboard_category());
         }
         dashboard.setUpdatedBy(loggedInUser);
         Dashboard updatedDashboard = dashboardRepository.save(dashboard);
