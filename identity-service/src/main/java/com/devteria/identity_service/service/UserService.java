@@ -37,7 +37,7 @@ public class UserService {
         User user = User.builder()
                 .username(userCreationRequest.getUser_name())
                 .email(userCreationRequest.getEmail())
-                .role(SystemRole.USER)
+                .role(SystemRole.STAFF)
                 .createdAt(Instant.now())
                 .department(userCreationRequest.getDepartment())
                 .status(UserStatus.ACTIVE)
