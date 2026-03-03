@@ -17,14 +17,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.Instant;
 import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -39,9 +36,14 @@ public class UserService {
                 .email(userCreationRequest.getEmail())
                 .role(SystemRole.STAFF)
                 .createdAt(Instant.now())
-                .department(userCreationRequest.getDepartment())
                 .status(UserStatus.ACTIVE)
                 .build();
+        systemAuditLogService.logEvent(
+                getLoggedInUser(),
+                EventLog.USER_CREATED,
+                TargetEntity.USER,
+                user.getUser_id()
+        );
         return userRepository.save(user);
     }
     public List<User> getAllUsers() {

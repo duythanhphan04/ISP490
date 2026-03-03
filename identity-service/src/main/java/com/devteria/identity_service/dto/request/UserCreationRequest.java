@@ -12,5 +12,4 @@ import lombok.experimental.FieldDefaults;
 public class UserCreationRequest {
     String user_name;
     String email;
-    Department department;
 }

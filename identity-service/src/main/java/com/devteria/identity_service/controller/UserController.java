@@ -1,6 +1,6 @@
 package com.devteria.identity_service.controller;
 
-import com.devteria.identity_service.dto.request.UserUpdateRequest;
+import com.devteria.identity_service.dto.request.UserCreationRequest;
 import com.devteria.identity_service.dto.response.ApiResponse;
 import com.devteria.identity_service.entity.User;
 import com.devteria.identity_service.enums.SystemRole;
@@ -8,7 +8,6 @@ import com.devteria.identity_service.enums.UserStatus;
 import com.devteria.identity_service.service.SystemAuditLogService;
 import com.devteria.identity_service.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +20,16 @@ public class UserController {
     private UserService userService;
     @Autowired
     private SystemAuditLogService systemAuditLogService;
+    @PostMapping
+    @Operation(summary = "Create a new user", description = "Create a new user with the provided information")
+    public ApiResponse<User> createUser(@RequestBody UserCreationRequest request) {
+        User user = userService.createUser(request);
+        return ApiResponse.<User>builder()
+                .data(user)
+                .message("User created successfully")
+                .code(1000)
+                .build();
+    }
 
     @GetMapping
     @Operation(summary = "Get all users", description = "Retrieve a list of all users")
