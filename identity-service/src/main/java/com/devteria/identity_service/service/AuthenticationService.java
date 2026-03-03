@@ -102,7 +102,7 @@ public class AuthenticationService {
                                                 User.builder()
                                                         .username(userInfo.getName())
                                                         .email(userInfo.getEmail())
-                                                        .role(SystemRole.USER)
+                                                        .role(SystemRole.STAFF)
                                                         .status(UserStatus.ACTIVE)
                                                         .createdAt(Instant.now())
                                                         .build()));
@@ -217,7 +217,7 @@ public class AuthenticationService {
                     User.builder()
                             .username(name)
                             .email(email)
-                            .role(SystemRole.USER)
+                            .role(SystemRole.STAFF)
                             .status(UserStatus.ACTIVE)
                             .createdAt(Instant.now())
                             .build();

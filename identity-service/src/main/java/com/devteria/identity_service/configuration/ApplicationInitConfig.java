@@ -25,11 +25,11 @@ public class ApplicationInitConfig {
   @Bean
   ApplicationRunner applicationRunner(UserRepository userRepository) {
     return args -> {
-      if (userRepository.findByRole(SystemRole.ADMIN).isEmpty()) {
+      if (userRepository.findByRole(SystemRole.ADMINISTRATOR).isEmpty()) {
         User user =
             User.builder()
                 .username("admin")
-                .role(SystemRole.ADMIN)
+                .role(SystemRole.ADMINISTRATOR)
                 .status(UserStatus.ACTIVE)
                 .createdAt(Instant.now())
                 .email("duyhcm04@gmail.com")
@@ -37,7 +37,7 @@ public class ApplicationInitConfig {
                 .build();
         userRepository.save(user);
         log.warn(
-            "Admin has been created with username: admin and password: admin, please change it immediately!");
+            "Admin has been created!");
       }
     };
   }
