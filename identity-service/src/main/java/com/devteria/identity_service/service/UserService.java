@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -119,6 +120,26 @@ public class UserService {
     public Department getUserDepartment(String userID) {
         User user = getUserByID(userID);
         return user.getDepartment();
+    }
+    public User updateUserRole(String userID, SystemRole newRole) {
+        User user = getUserByID(userID);
+        User oldUserSnapshot = new User();
+        BeanUtils.copyProperties(user, oldUserSnapshot);
+        user.setRole(newRole);
+        User updatedUser = userRepository.save(user);
+        try{
+            systemAuditLogService.logEntityUpdate(
+                    getLoggedInUser(),
+                    oldUserSnapshot,
+                    updatedUser,
+                    userID,
+                    TargetEntity.USER,
+                    EventLog.USER_ROLE_UPDATED
+            );
+        } catch (Exception e) {
+            log.error("Failed to log user role update", e);
+        }
+        return user;
     }
     public User getManagerByUserID(String userID) {
         User user = getUserByID(userID);

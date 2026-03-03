@@ -30,6 +30,16 @@ public class UserController {
                 .code(1000)
                 .build();
     }
+    @PutMapping("/role/{userID}/{role}")
+    @Operation(summary = "Update user's role")
+    public ApiResponse<User> updateUserRole(@PathVariable String userID, @PathVariable SystemRole role) {
+        User updatedUser = userService.updateUserRole(userID, role);
+        return ApiResponse.<User>builder()
+                .data(updatedUser)
+                .message("User role updated successfully")
+                .code(1000)
+                .build();
+    }
 
     @GetMapping
     @Operation(summary = "Get all users", description = "Retrieve a list of all users")
