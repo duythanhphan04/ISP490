@@ -27,7 +27,7 @@ public class GroupDashboardAccess {
     @JoinColumn(name = "dashboard_id", nullable = false)
     Dashboard dashboard;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "granted_by", nullable = false)
     User grantedBy;
 

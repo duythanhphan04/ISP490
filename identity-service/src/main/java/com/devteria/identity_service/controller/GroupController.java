@@ -86,6 +86,16 @@ public class GroupController {
                 .code(1000)
                 .build();
     }
+    @PutMapping("/restore/{groupID}")
+    @Operation(summary = "Restore soft-deleted group by ID")
+    public ApiResponse<Group> restoreGroup(@PathVariable String groupID) {
+        Group group = groupService.setGroupStatus(groupID, GroupStatus.ACTIVE);
+        return ApiResponse.<Group>builder()
+                .data(group)
+                .message("Group restored successfully")
+                .code(1000)
+                .build();
+    }
     @PutMapping("delete/{groupID}")
     @Operation(summary = "Delete group by ID")
     public ApiResponse<Group> deleteGroup(@PathVariable String groupID) {
