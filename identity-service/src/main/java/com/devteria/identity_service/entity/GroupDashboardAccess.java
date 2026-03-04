@@ -1,5 +1,6 @@
 package com.devteria.identity_service.entity;
 import com.devteria.identity_service.enums.GroupDashboardStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -11,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "group_dashboard_access")
 public class GroupDashboardAccess {
     @Id
