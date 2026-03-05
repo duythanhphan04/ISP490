@@ -108,19 +108,18 @@ public class TicketService {
         boolean isValidTransition = false;
         switch (currentStatus) {
             case WAITING_FOR_APPROVAL:
-                if (newStatus == TicketStatus.REJECTED) {
+                if (newStatus == TicketStatus.REJECTED || newStatus == TicketStatus.CANCELLED) {
                     isValidTransition = true;
                 }
                 break;
             case IN_PROGRESS:
-                if (newStatus == TicketStatus.RESOLVED) {
+                if (newStatus == TicketStatus.RESOLVED || newStatus == TicketStatus.CANCELLED) {
                     isValidTransition = true;
                 }
                 break;
             default:
                 break;
         }
-
         if (!isValidTransition) {
             throw new WebException(ErrorCode.INVALID_TICKET_STATUS_UPDATE);
         }
