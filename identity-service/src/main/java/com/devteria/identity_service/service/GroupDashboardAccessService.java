@@ -89,4 +89,5 @@ public class GroupDashboardAccessService {
         return groupDashboardAccessRepository.findByGroupAndDashboard(groupId, dashboardId)
                 .orElseThrow(() -> new WebException(ErrorCode.GROUP_DASHBOARD_ACCESS_NOT_FOUND));
     }
+
 }

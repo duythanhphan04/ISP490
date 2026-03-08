@@ -179,4 +179,14 @@ public class GroupController {
                 .code(1000)
                 .build();
     }
+    @GetMapping("/user/group/{userID}/{groupID}")
+    @Operation(summary = "Get user group by user ID and group ID")
+    public ApiResponse<UserGroup> getUserGroupByUserIDAndGroupID(@PathVariable String userID, @PathVariable String groupID) {
+        UserGroup userGroup = userGroupService.getUserGroupByUserIDAndGroupID(userID, groupID);
+        return ApiResponse.<UserGroup>builder()
+                .data(userGroup)
+                .message("User group fetched successfully")
+                .code(1000)
+                .build();
+    }
 }

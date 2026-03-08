@@ -38,3 +38,5 @@ build/
 mysql/
 # Cho phép copy file secret khi build Docker
 !application-secret.properties
+
+identity-service/src/main/resources/application-secret.properties

@@ -183,4 +183,15 @@ public class DashboardController {
                 .code(1000)
                 .build();
     }
+    @GetMapping("/group-access/group/{groupID}/dashboard/{dashboardID}")
+    @Operation(summary = "Get group-dashboard access ")
+    public ApiResponse<GroupDashboardAccess> getGroupDashboardAccessDetails(@PathVariable String groupID,
+                                                                          @PathVariable String dashboardID) {
+        GroupDashboardAccess gda = groupDashboardAccessService.getGroupDashboardAccessByGroupAndDashboard(groupID, dashboardID);
+        return ApiResponse.<GroupDashboardAccess>builder()
+                .data(gda)
+                .message("Group-dashboard access details fetched successfully")
+                .code(1000)
+                .build();
+    }
 }
