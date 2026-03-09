@@ -4,5 +4,5 @@ public enum SystemRole {
     STAFF,
     ADMINISTRATOR,
     BI,
-    Manager
+    MANAGER
 }

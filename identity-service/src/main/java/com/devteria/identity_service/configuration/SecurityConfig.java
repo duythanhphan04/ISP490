@@ -144,8 +144,8 @@ public class SecurityConfig {
     JwtAuthenticationConverter authenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter =
                 new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("scope");
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
-
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
         return jwtAuthenticationConverter;
