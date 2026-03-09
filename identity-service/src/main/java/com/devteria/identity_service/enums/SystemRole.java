@@ -4,5 +4,6 @@ public enum SystemRole {
     STAFF,
     ADMINISTRATOR,
     BI,
-    MANAGER
+    MANAGER,
+    BI_MANAGER
 }

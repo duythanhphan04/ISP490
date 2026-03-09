@@ -39,6 +39,9 @@ public class Ticket {
     @Column(name = "description", nullable = false)
     String description;
 
+    @Column(name = "reason", length = 255)
+    String reason;
+
     @Column(name = "status", length = 255)
     @Enumerated(EnumType.STRING)
     @AuditableField("Ticket Status")

@@ -1,9 +1,11 @@
 package com.devteria.identity_service.enums;
 
 public enum TicketStatus {
-    WAITING_FOR_APPROVAL,
+    CREATED,
+    APPROVED,
     IN_PROGRESS,
     RESOLVED,
     REJECTED,
-    CANCELLED
+    CANCELLED,
+    DONE,
 }

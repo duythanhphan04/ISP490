@@ -1,9 +1,9 @@
 package com.devteria.identity_service.service;
-
 import com.devteria.identity_service.dto.request.TicketCreationRequest;
 import com.devteria.identity_service.entity.Ticket;
 import com.devteria.identity_service.entity.User;
 import com.devteria.identity_service.enums.EventLog;
+import com.devteria.identity_service.enums.RequestType;
 import com.devteria.identity_service.enums.TargetEntity;
 import com.devteria.identity_service.enums.TicketStatus;
 import com.devteria.identity_service.exception.ErrorCode;
@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.Instant;
 import java.util.List;
 
@@ -25,14 +24,36 @@ public class TicketService {
     TicketRepository ticketRepository;
     UserService userService;
     SystemAuditLogService systemAuditLogService;
+    @Transactional
     public Ticket createTicket(TicketCreationRequest request) {
         User loggedInUser = userService.getLoggedInUser();
         Ticket ticket = Ticket.builder()
                 .requester(loggedInUser)
                 .type(request.getType())
                 .description(request.getDescription())
-                .status(TicketStatus.WAITING_FOR_APPROVAL)
+                .status(TicketStatus.CREATED)
                 .approver(userService.getManagerByUserID(loggedInUser.getUser_id()))
+                .createdAt(java.time.Instant.now())
+                .build();
+        ticketRepository.save(ticket);
+        systemAuditLogService.logEvent(
+                loggedInUser,
+                com.devteria.identity_service.enums.EventLog.TICKET_CREATED,
+                com.devteria.identity_service.enums.TargetEntity.TICKET,
+                ticket.getTicket_id()
+        );
+        return ticket;
+    }
+    @Transactional
+    public Ticket createTicketType24(TicketCreationRequest request) {
+        User loggedInUser = userService.getLoggedInUser();
+        Ticket ticket = Ticket.builder()
+                .requester(loggedInUser)
+                .type(request.getType())
+                .description(request.getDescription())
+                .status(TicketStatus.CREATED)
+                .approver(userService.getAdminUser())
+                .assigned_staff(userService.getAdminUser())
                 .createdAt(java.time.Instant.now())
                 .build();
         ticketRepository.save(ticket);
@@ -67,7 +88,7 @@ public class TicketService {
                 .status(ticket.getStatus())
                 .assigned_staff(ticket.getAssigned_staff())
                 .build();
-        if (ticket.getStatus() == TicketStatus.WAITING_FOR_APPROVAL) {
+        if (ticket.getStatus() == TicketStatus.APPROVED) {
             ticket.setAssigned_staff(staff);
             ticket.setStatus(TicketStatus.IN_PROGRESS);
         } else {
@@ -107,13 +128,23 @@ public class TicketService {
         TicketStatus currentStatus = ticket.getStatus();
         boolean isValidTransition = false;
         switch (currentStatus) {
-            case WAITING_FOR_APPROVAL:
-                if (newStatus == TicketStatus.REJECTED || newStatus == TicketStatus.CANCELLED) {
+            case CREATED:
+                if (newStatus == TicketStatus.CANCELLED || newStatus == TicketStatus.APPROVED) {
+                    isValidTransition = true;
+                }
+                break;
+            case APPROVED:
+                if (newStatus == TicketStatus.CANCELLED) {
                     isValidTransition = true;
                 }
                 break;
             case IN_PROGRESS:
                 if (newStatus == TicketStatus.RESOLVED || newStatus == TicketStatus.CANCELLED) {
+                    isValidTransition = true;
+                }
+                break;
+            case RESOLVED:
+                if (newStatus == TicketStatus.DONE) {
                     isValidTransition = true;
                 }
                 break;
@@ -135,5 +166,30 @@ public class TicketService {
                 EventLog.TICKET_STATUS_UPDATED
         );
         return updatedTicket;
+    }
+    @Transactional
+    public Ticket rejectTicket(String ticketID, String reason) {
+        Ticket ticket = getTicketByID(ticketID);
+        Ticket oldTicketSnapshot = Ticket.builder()
+                .status(ticket.getStatus())
+                .assigned_staff(ticket.getAssigned_staff())
+                .build();
+        if (ticket.getStatus() == TicketStatus.CREATED) {
+            ticket.setStatus(TicketStatus.REJECTED);
+            ticket.setReason(reason);
+            ticket.setUpdatedAt(Instant.now());
+            Ticket updatedTicket = ticketRepository.save(ticket);
+            systemAuditLogService.logEntityUpdate(
+                    userService.getLoggedInUser(),
+                    oldTicketSnapshot,
+                    updatedTicket,
+                    ticketID,
+                    TargetEntity.TICKET,
+                    EventLog.TICKET_REJECTED
+            );
+            return updatedTicket;
+        } else {
+            throw new WebException(ErrorCode.INVALID_TICKET_STATUS_UPDATE);
+        }
     }
 }

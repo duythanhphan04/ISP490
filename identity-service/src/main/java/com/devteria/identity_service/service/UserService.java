@@ -65,6 +65,9 @@ public class UserService {
         }
         return null;
     }
+    public User getAdminUser() {
+        return userRepository.findByRole(SystemRole.ADMINISTRATOR).stream().findFirst().orElseThrow( () -> new WebException(ErrorCode.USER_NOT_FOUND));
+    }
     @Transactional
     public User deleteUser(String userID) {
         User user = getUserByID(userID);

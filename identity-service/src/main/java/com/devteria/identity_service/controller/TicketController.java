@@ -18,7 +18,7 @@ public class TicketController {
     @Autowired
     TicketService ticketService;
     @PostMapping
-    @Operation(summary = "Create a new ticket")
+    @Operation(summary = "Create a new ticket (Type 1,3) - Requires approver and assigned staff")
     public ApiResponse<Ticket> createTicket(@RequestBody @Valid TicketCreationRequest request) {
         Ticket ticket = ticketService.createTicket(request);
         return ApiResponse.<Ticket>builder()
@@ -27,6 +27,16 @@ public class TicketController {
                 .code(1000)
                 .build();
 
+    }
+    @PostMapping("/ticket_type2")
+    @Operation(summary = "Create a new ticket (Type 2,4) - No approver or assigned staff needed, auto-assign to admin")
+    public ApiResponse<Ticket> createTicketType2(@RequestBody @Valid TicketCreationRequest request) {
+        Ticket ticket = ticketService.createTicketType24(request);
+        return ApiResponse.<Ticket>builder()
+                .data(ticket)
+                .message("Ticket created successfully")
+                .code(1000)
+                .build();
     }
     @GetMapping("/{ticketID}")
     @Operation(summary = "Get ticket by ID")
@@ -105,6 +115,16 @@ public class TicketController {
         return ApiResponse.<Ticket>builder()
                 .data(ticket)
                 .message("Ticket status updated successfully")
+                .code(1000)
+                .build();
+    }
+    @PostMapping("/reject/{ticketID}")
+    @Operation(summary = "Reject a ticket")
+    public ApiResponse<Ticket> rejectTicket(@PathVariable String ticketID, @RequestParam String reason) {
+        Ticket ticket = ticketService.rejectTicket(ticketID,reason);
+        return ApiResponse.<Ticket>builder()
+                .data(ticket)
+                .message("Ticket rejected successfully")
                 .code(1000)
                 .build();
     }
