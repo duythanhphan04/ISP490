@@ -39,6 +39,9 @@ public class Ticket {
     @Column(name = "description", nullable = false)
     String description;
 
+    @Column(name = "dashboard_id")
+    String dashboard_id;
+
     @Column(name = "reason", length = 255)
     String reason;
 

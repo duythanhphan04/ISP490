@@ -19,7 +19,7 @@ public class TicketController {
     TicketService ticketService;
     @PostMapping
     @Operation(summary = "Create a new ticket (Type 1,3) - Requires approver and assigned staff")
-    public ApiResponse<Ticket> createTicket(@RequestBody @Valid TicketCreationRequest request) {
+    public ApiResponse<Ticket> createTicketType1Or3(@RequestBody @Valid TicketCreationRequest request) {
         Ticket ticket = ticketService.createTicket(request);
         return ApiResponse.<Ticket>builder()
                 .data(ticket)
@@ -29,9 +29,9 @@ public class TicketController {
 
     }
     @PostMapping("/ticket_type2")
-    @Operation(summary = "Create a new ticket (Type 2,4) - No approver or assigned staff needed, auto-assign to admin")
+    @Operation(summary = "Create a new ticket (Type 2) - No approver or assigned staff needed, auto-assign to admin")
     public ApiResponse<Ticket> createTicketType2(@RequestBody @Valid TicketCreationRequest request) {
-        Ticket ticket = ticketService.createTicketType24(request);
+        Ticket ticket = ticketService.createTicketType2(request);
         return ApiResponse.<Ticket>builder()
                 .data(ticket)
                 .message("Ticket created successfully")
@@ -99,7 +99,7 @@ public class TicketController {
                 .build();
     }
     @PostMapping("/{ticketID}/assign/{staffID}")
-    @Operation(summary = "Assign a ticket to a staff member")
+    @Operation(summary = "Assign a ticket to a BI member")
     public ApiResponse<Ticket> assignTicket(@PathVariable String ticketID, @PathVariable String staffID) {
         Ticket ticket = ticketService.assignTicket(ticketID, staffID);
         return ApiResponse.<Ticket>builder()
@@ -128,4 +128,35 @@ public class TicketController {
                 .code(1000)
                 .build();
     }
+    @PutMapping("/submit_result/{ticketID}/dashboard/{DashboardID}")
+    @Operation(summary = "Submit the result of a ticket type 4")
+    public ApiResponse<Ticket> submitTicketResult(@PathVariable String ticketID, @PathVariable String DashboardID) {
+        Ticket ticket = ticketService.submitDashboardResult(ticketID, DashboardID);
+        return ApiResponse.<Ticket>builder()
+                .data(ticket)
+                .message("Ticket result submitted successfully")
+                .code(1000)
+                .build();
+    }
+    @PutMapping("/approve-dashboard/{ticketID}")
+    @Operation(summary = "Approve a dashboard access request (Ticket Type 4)")
+    public ApiResponse<Ticket> approveDashboardAccess(@PathVariable String ticketID) {
+        Ticket ticket = ticketService.approveDashboardDraft(ticketID);
+        return ApiResponse.<Ticket>builder()
+                .data(ticket)
+                .message("Dashboard access approved successfully")
+                .code(1000)
+                .build();
+    }
+    @PutMapping("/reject-dashboard/{ticketID}")
+    @Operation(summary = "Reject a dashboard access request (Ticket Type 4)")
+    public ApiResponse<Ticket> rejectDashboardAccess(@PathVariable String ticketID, @RequestParam String reason) {
+        Ticket ticket = ticketService.rejectDashboardDraft(ticketID, reason);
+        return ApiResponse.<Ticket>builder()
+                .data(ticket)
+                .message("Dashboard access rejected successfully")
+                .code(1000)
+                .build();
+    }
+
 }

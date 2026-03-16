@@ -1,13 +1,12 @@
 package com.devteria.identity_service.service;
 import com.devteria.identity_service.dto.request.TicketCreationRequest;
+import com.devteria.identity_service.entity.Dashboard;
 import com.devteria.identity_service.entity.Ticket;
 import com.devteria.identity_service.entity.User;
-import com.devteria.identity_service.enums.EventLog;
-import com.devteria.identity_service.enums.RequestType;
-import com.devteria.identity_service.enums.TargetEntity;
-import com.devteria.identity_service.enums.TicketStatus;
+import com.devteria.identity_service.enums.*;
 import com.devteria.identity_service.exception.ErrorCode;
 import com.devteria.identity_service.exception.WebException;
+import com.devteria.identity_service.repository.DashboardRepository;
 import com.devteria.identity_service.repository.TicketRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +23,8 @@ public class TicketService {
     TicketRepository ticketRepository;
     UserService userService;
     SystemAuditLogService systemAuditLogService;
+    DashboardService dashboardService;
+    DashboardRepository dashboardRepository;
     @Transactional
     public Ticket createTicket(TicketCreationRequest request) {
         User loggedInUser = userService.getLoggedInUser();
@@ -45,7 +46,7 @@ public class TicketService {
         return ticket;
     }
     @Transactional
-    public Ticket createTicketType24(TicketCreationRequest request) {
+    public Ticket createTicketType2(TicketCreationRequest request) {
         User loggedInUser = userService.getLoggedInUser();
         Ticket ticket = Ticket.builder()
                 .requester(loggedInUser)
@@ -136,6 +137,8 @@ public class TicketService {
             case APPROVED:
                 if (newStatus == TicketStatus.CANCELLED) {
                     isValidTransition = true;
+                } else if (newStatus == TicketStatus.RESOLVED && ticket.getType() == RequestType.TYPE2) {
+                    isValidTransition = true;
                 }
                 break;
             case IN_PROGRESS:
@@ -174,22 +177,116 @@ public class TicketService {
                 .status(ticket.getStatus())
                 .assigned_staff(ticket.getAssigned_staff())
                 .build();
-        if (ticket.getStatus() == TicketStatus.CREATED) {
-            ticket.setStatus(TicketStatus.REJECTED);
-            ticket.setReason(reason);
-            ticket.setUpdatedAt(Instant.now());
-            Ticket updatedTicket = ticketRepository.save(ticket);
-            systemAuditLogService.logEntityUpdate(
-                    userService.getLoggedInUser(),
-                    oldTicketSnapshot,
-                    updatedTicket,
-                    ticketID,
-                    TargetEntity.TICKET,
-                    EventLog.TICKET_REJECTED
-            );
-            return updatedTicket;
-        } else {
+        if(ticket.getStatus()!= TicketStatus.CREATED){
             throw new WebException(ErrorCode.INVALID_TICKET_STATUS_UPDATE);
         }
+        if(reason == null || reason.trim().isEmpty()){
+            throw new WebException(ErrorCode.MISSING_REJECTION_REASON);
+        }
+        ticket.setStatus(TicketStatus.REJECTED);
+        ticket.setReason(reason);
+        ticket.setUpdatedAt(Instant.now());
+        Ticket updatedTicket = ticketRepository.save(ticket);
+        systemAuditLogService.logEntityUpdate(
+                userService.getLoggedInUser(),
+                oldTicketSnapshot,
+                updatedTicket,
+                ticketID,
+                TargetEntity.TICKET,
+                EventLog.TICKET_REJECTED
+        );
+        return updatedTicket;
+    }
+    @Transactional
+    public Ticket submitDashboardResult(String ticketID, String dashboardID) {
+        Ticket ticket = getTicketByID(ticketID);
+        Ticket oldTicketSnapshot = Ticket.builder()
+                .status(ticket.getStatus())
+                .assigned_staff(ticket.getAssigned_staff())
+                .build();
+        if(ticket.getStatus()!= TicketStatus.IN_PROGRESS){
+            throw new WebException(ErrorCode.INVALID_TICKET_STATUS_UPDATE);
+        }
+        Dashboard dashboard = dashboardService.getDashboardById(dashboardID);
+        if(dashboard.getStatus() != DashboardStatus.DRAFT){
+            throw new WebException(ErrorCode.INVALID_DASHBOARD_STATUS);
+        }
+        ticket.setStatus(TicketStatus.RESOLVED);
+        ticket.setDashboard_id(dashboard.getDashboard_id());
+        ticket.setUpdatedAt(Instant.now());
+        Ticket updatedTicket = ticketRepository.save(ticket);
+        systemAuditLogService.logEntityUpdate(
+                userService.getLoggedInUser(),
+                oldTicketSnapshot,
+                updatedTicket,
+                ticketID,
+                TargetEntity.TICKET,
+                EventLog.TICKET_RESULT_SUBMITTED
+        );
+        return updatedTicket;
+    }
+    @Transactional
+    public Ticket approveDashboardDraft(String ticketID) {
+        Ticket ticket = getTicketByID(ticketID);
+        Ticket oldTicketSnapshot = Ticket.builder()
+                .status(ticket.getStatus())
+                .assigned_staff(ticket.getAssigned_staff())
+                .build();
+        if(ticket.getStatus() != TicketStatus.RESOLVED){
+            throw new WebException(ErrorCode.INVALID_TICKET_STATUS_UPDATE);
+        }
+        Dashboard dashboard = dashboardService.getDashboardById(ticket.getDashboard_id());
+        Dashboard oldDashboardSnapshot = Dashboard.builder()
+                .status(dashboard.getStatus())
+                .build();
+        if(dashboard.getStatus() != DashboardStatus.DRAFT){
+            throw new WebException(ErrorCode.INVALID_DASHBOARD_STATUS);
+        }
+        dashboard.setStatus(DashboardStatus.ACTIVE);
+        dashboardRepository.save(dashboard);
+        ticket.setStatus(TicketStatus.DONE);
+        ticket.setUpdatedAt(Instant.now());
+        Ticket updatedTicket = ticketRepository.save(ticket);
+        systemAuditLogService.logEntityUpdate(
+                userService.getLoggedInUser(),
+                oldDashboardSnapshot,
+                dashboard,
+                dashboard.getDashboard_id(),
+                TargetEntity.DASHBOARD,
+                EventLog.DASHBOARD_UPDATED
+        );
+        systemAuditLogService.logEntityUpdate(
+                userService.getLoggedInUser(),
+                oldTicketSnapshot,
+                updatedTicket,
+                ticketID,
+                TargetEntity.TICKET,
+                EventLog.TICKET_STATUS_UPDATED
+        );
+        return updatedTicket;
+    }
+    @Transactional
+    public Ticket rejectDashboardDraft(String ticketID, String reason) {
+        Ticket ticket = getTicketByID(ticketID);
+        Ticket oldTicketSnapshot = Ticket.builder()
+                .status(ticket.getStatus())
+                .assigned_staff(ticket.getAssigned_staff())
+                .build();
+        if(ticket.getStatus() != TicketStatus.RESOLVED){
+            throw new WebException(ErrorCode.INVALID_TICKET_STATUS_UPDATE);
+        }
+        ticket.setStatus(TicketStatus.IN_PROGRESS);
+        ticket.setReason(reason);
+        ticket.setUpdatedAt(Instant.now());
+        Ticket updatedTicket = ticketRepository.save(ticket);
+        systemAuditLogService.logEntityUpdate(
+                userService.getLoggedInUser(),
+                oldTicketSnapshot,
+                updatedTicket,
+                ticketID,
+                TargetEntity.TICKET,
+                EventLog.TICKET_STATUS_UPDATED
+        );
+        return updatedTicket;
     }
 }

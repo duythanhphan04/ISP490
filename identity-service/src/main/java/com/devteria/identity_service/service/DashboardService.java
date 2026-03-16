@@ -39,9 +39,8 @@ public class DashboardService {
                 .url_path(request.getUrl_path())
                 .category(request.getCategory())
                 .createdBy(loggedInUser)
-                .status(DashboardStatus.ACTIVE) // Nên set trạng thái mặc định
+                .status(DashboardStatus.DRAFT)
                 .build();
-
         dashboard = dashboardRepository.save(dashboard);
         systemAuditLogService.logEvent(
                 loggedInUser,
