@@ -98,6 +98,36 @@ public class TicketController {
                 .code(1000)
                 .build();
     }
+    @GetMapping("/assigned/{staffID}")
+    @Operation(summary = "Get all tickets assigned to a specific staff regardless of status")
+    public ApiResponse<List<Ticket>> getAllTicketsForAssignedStaff(@PathVariable String staffID) {
+        List<Ticket> tickets = ticketService.getTicketByAssignedStaffID(staffID);
+        return ApiResponse.<List<Ticket>>builder()
+                .data(tickets)
+                .message("Tickets fetched successfully")
+                .code(1000)
+                .build();
+    }
+    @GetMapping("/approver/{approverID}")
+    @Operation(summary = "Get all tickets for a specific approver regardless of status")
+    public ApiResponse<List<Ticket>> getAllTicketsForApprover(@PathVariable String approverID) {
+        List<Ticket> tickets = ticketService.getTicketByApproverID(approverID);
+        return ApiResponse.<List<Ticket>>builder()
+                .data(tickets)
+                .message("Tickets fetched successfully")
+                .code(1000)
+                .build();
+    }
+    @GetMapping("/requester/{requesterID}")
+    @Operation(summary = "Get all tickets for a specific requester regardless of status")
+    public ApiResponse<List<Ticket>> getAllTicketsForRequester(@PathVariable String requesterID) {
+        List<Ticket> tickets = ticketService.getTicketByRequesterID(requesterID);
+        return ApiResponse.<List<Ticket>>builder()
+                .data(tickets)
+                .message("Tickets fetched successfully")
+                .code(1000)
+                .build();
+    }
     @PostMapping("/{ticketID}/assign/{staffID}")
     @Operation(summary = "Assign a ticket to a BI member")
     public ApiResponse<Ticket> assignTicket(@PathVariable String ticketID, @PathVariable String staffID) {

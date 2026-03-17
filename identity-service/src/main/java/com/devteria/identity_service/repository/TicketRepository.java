@@ -12,8 +12,11 @@ import java.util.List;
 public interface TicketRepository extends JpaRepository<Ticket, String> {
 
     List<Ticket> findByRequesterAndStatus(User requester, TicketStatus status);
-
     List<Ticket> findByApproverAndStatus(User approver, TicketStatus status);
     @Query("SELECT t FROM Ticket t WHERE t.assigned_staff = :staff AND t.status = :status")
     List<Ticket> findByAssignedStaffAndStatus( @Param("staff")User staff, @Param("status")TicketStatus status);
+    List<Ticket> findByRequester(User requester);
+    @Query("SELECT t FROM Ticket t WHERE t.assigned_staff = :staff")
+    List<Ticket> findByAssignedStaff(@Param("staff")User assignedStaff);
+    List<Ticket> findByApprover(User approver);
 }

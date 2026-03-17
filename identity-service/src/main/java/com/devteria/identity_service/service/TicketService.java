@@ -289,4 +289,13 @@ public class TicketService {
         );
         return updatedTicket;
     }
+    public List<Ticket> getTicketByRequesterID(String requesterID) {
+        return ticketRepository.findByRequester(userService.getUserByID(requesterID));
+    }
+    public List<Ticket> getTicketByAssignedStaffID(String assignedStaffID) {
+        return ticketRepository.findByAssignedStaff(userService.getUserByID(assignedStaffID));
+    }
+    public List<Ticket> getTicketByApproverID(String approverID) {
+        return ticketRepository.findByApprover(userService.getUserByID(approverID));
+    }
 }
