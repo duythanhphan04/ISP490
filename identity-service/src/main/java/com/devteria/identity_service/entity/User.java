@@ -45,6 +45,7 @@ public class User {
     @Column(name = "created_at")
     Instant createdAt;
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "department_id", referencedColumnName = "department_id")
     @AuditableField("department")

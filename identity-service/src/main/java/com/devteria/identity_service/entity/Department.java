@@ -27,6 +27,7 @@ public class Department {
     @AuditableField("department_name")
     String department_name;
 
+    @ToString.Exclude 
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "manager", nullable = false)
     @AuditableField("manager")
