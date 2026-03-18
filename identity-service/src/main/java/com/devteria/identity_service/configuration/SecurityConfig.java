@@ -101,9 +101,8 @@ public class SecurityConfig {
 
                             // Redirect lại frontend
                             String redirectUrl = String.format(
-                                    "https://fe-icsas.vercel.app?appToken=%s&googleToken=%s", // URL Frontend
-                                    appToken,
-                                    googleAccessToken
+                                    "https://fe-icsas.vercel.app/oauth2-redirect?appToken=%s", // URL Frontend
+                                    appToken
                             );
 
                             response.sendRedirect(redirectUrl);
