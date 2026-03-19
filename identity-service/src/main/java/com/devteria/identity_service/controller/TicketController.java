@@ -3,6 +3,7 @@ package com.devteria.identity_service.controller;
 import com.devteria.identity_service.dto.request.TicketCreationRequest;
 import com.devteria.identity_service.dto.response.ApiResponse;
 import com.devteria.identity_service.entity.Ticket;
+import com.devteria.identity_service.enums.RequestType;
 import com.devteria.identity_service.enums.TicketStatus;
 import com.devteria.identity_service.service.TicketService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -122,6 +123,26 @@ public class TicketController {
     @Operation(summary = "Get all tickets for a specific requester regardless of status")
     public ApiResponse<List<Ticket>> getAllTicketsForRequester(@PathVariable String requesterID) {
         List<Ticket> tickets = ticketService.getTicketByRequesterID(requesterID);
+        return ApiResponse.<List<Ticket>>builder()
+                .data(tickets)
+                .message("Tickets fetched successfully")
+                .code(1000)
+                .build();
+    }
+    @GetMapping("/status/{status}")
+    @Operation(summary = "Get all tickets by status")
+    public ApiResponse<List<Ticket>> getAllTicketsByStatus(@PathVariable TicketStatus status){
+        List<Ticket> tickets = ticketService.getAllTicketsByStatus(status);
+        return ApiResponse.<List<Ticket>>builder()
+                .data(tickets)
+                .message("Tickets fetched successfully")
+                .code(1000)
+                .build();
+    }
+    @GetMapping("/type/{type}")
+    @Operation(summary = "Get all tickets by type")
+    public ApiResponse<List<Ticket>> getAllTicketsByType(@PathVariable RequestType type){
+        List<Ticket> tickets = ticketService.getAllTicketsByType(type);
         return ApiResponse.<List<Ticket>>builder()
                 .data(tickets)
                 .message("Tickets fetched successfully")

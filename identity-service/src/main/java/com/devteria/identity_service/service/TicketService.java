@@ -298,4 +298,10 @@ public class TicketService {
     public List<Ticket> getTicketByApproverID(String approverID) {
         return ticketRepository.findByApprover(userService.getUserByID(approverID));
     }
+    public List<Ticket> getAllTicketsByStatus(TicketStatus status) {
+        return ticketRepository.findByStatus(status);
+    }
+    public List<Ticket> getAllTicketsByType(RequestType type) {
+        return ticketRepository.findByType(type);
+    }
 }
