@@ -5,6 +5,8 @@ public enum TicketStatus {
     APPROVED,
     IN_PROGRESS,
     RESOLVED,
+    WAITING_FOR_VERIFICATION,
+    VERIFIED,
     REJECTED,
     CANCELLED,
     DONE,

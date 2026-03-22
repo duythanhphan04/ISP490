@@ -204,14 +204,11 @@ public class TicketService {
                 .status(ticket.getStatus())
                 .assigned_staff(ticket.getAssigned_staff())
                 .build();
-        if(ticket.getStatus()!= TicketStatus.IN_PROGRESS){
-            throw new WebException(ErrorCode.INVALID_TICKET_STATUS_UPDATE);
-        }
         Dashboard dashboard = dashboardService.getDashboardById(dashboardID);
         if(dashboard.getStatus() != DashboardStatus.DRAFT){
             throw new WebException(ErrorCode.INVALID_DASHBOARD_STATUS);
         }
-        ticket.setStatus(TicketStatus.RESOLVED);
+        ticket.setStatus(TicketStatus.WAITING_FOR_VERIFICATION);
         ticket.setDashboard_id(dashboard.getDashboard_id());
         ticket.setUpdatedAt(Instant.now());
         Ticket updatedTicket = ticketRepository.save(ticket);
@@ -232,9 +229,6 @@ public class TicketService {
                 .status(ticket.getStatus())
                 .assigned_staff(ticket.getAssigned_staff())
                 .build();
-        if(ticket.getStatus() != TicketStatus.RESOLVED){
-            throw new WebException(ErrorCode.INVALID_TICKET_STATUS_UPDATE);
-        }
         Dashboard dashboard = dashboardService.getDashboardById(ticket.getDashboard_id());
         Dashboard oldDashboardSnapshot = Dashboard.builder()
                 .status(dashboard.getStatus())
@@ -244,7 +238,7 @@ public class TicketService {
         }
         dashboard.setStatus(DashboardStatus.ACTIVE);
         dashboardRepository.save(dashboard);
-        ticket.setStatus(TicketStatus.DONE);
+        ticket.setStatus(TicketStatus.VERIFIED);
         ticket.setUpdatedAt(Instant.now());
         Ticket updatedTicket = ticketRepository.save(ticket);
         systemAuditLogService.logEntityUpdate(
@@ -272,9 +266,6 @@ public class TicketService {
                 .status(ticket.getStatus())
                 .assigned_staff(ticket.getAssigned_staff())
                 .build();
-        if(ticket.getStatus() != TicketStatus.RESOLVED){
-            throw new WebException(ErrorCode.INVALID_TICKET_STATUS_UPDATE);
-        }
         ticket.setStatus(TicketStatus.IN_PROGRESS);
         ticket.setReason(reason);
         ticket.setUpdatedAt(Instant.now());
