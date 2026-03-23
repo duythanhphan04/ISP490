@@ -35,7 +35,8 @@ public enum ErrorCode {
     TICKET_NOT_OPEN (1027, "Ticket is not open", HttpStatus.BAD_REQUEST),
     INVALID_TICKET_STATUS_UPDATE (1028, "Invalid ticket status update", HttpStatus.BAD_REQUEST),
     INVALID_DASHBOARD_STATUS (1030, "Invalid dashboard status update", HttpStatus.BAD_REQUEST),
-    MISSING_REJECTION_REASON (1029, "Missing rejection reason for ticket rejection", HttpStatus.BAD_REQUEST);
+    MISSING_REJECTION_REASON (1029, "Missing rejection reason for ticket rejection", HttpStatus.BAD_REQUEST),
+    DASHBOARD_USAGE_LOG_NOT_FOUND (1031, "Dashboard usage log not found", HttpStatus.BAD_REQUEST);
 
   private final int code;
   private final String message;

@@ -32,9 +32,6 @@ public class DashboardUsageLogs {
     @Column(name = "accessed_at")
     Instant viewed_at;
 
-    @Column(name = "session_id", nullable = false)
-    String session_id;
-
     @Column(name = "duration", nullable = false)
     int duration;
 
