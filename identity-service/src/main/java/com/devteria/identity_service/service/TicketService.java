@@ -146,6 +146,15 @@ public class TicketService {
                     isValidTransition = true;
                 }
                 break;
+            case WAITING_FOR_VERIFICATION:
+                if(newStatus == TicketStatus.VERIFIED || newStatus == TicketStatus.IN_PROGRESS) {
+                    isValidTransition = true;
+                }
+            case VERIFIED:
+                if (newStatus == TicketStatus.RESOLVED) {
+                    isValidTransition = true;
+                }
+                break;
             case RESOLVED:
                 if (newStatus == TicketStatus.DONE) {
                     isValidTransition = true;
@@ -240,6 +249,7 @@ public class TicketService {
         dashboardRepository.save(dashboard);
         ticket.setStatus(TicketStatus.VERIFIED);
         ticket.setUpdatedAt(Instant.now());
+        ticket.setReason(null);
         Ticket updatedTicket = ticketRepository.save(ticket);
         systemAuditLogService.logEntityUpdate(
                 userService.getLoggedInUser(),
