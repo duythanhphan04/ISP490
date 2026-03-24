@@ -142,7 +142,8 @@ public class TicketService {
                 }
                 break;
             case IN_PROGRESS:
-                if (newStatus == TicketStatus.RESOLVED || newStatus == TicketStatus.CANCELLED) {
+                if (newStatus == TicketStatus.RESOLVED || newStatus == TicketStatus.CANCELLED
+                        || newStatus == TicketStatus.WAITING_FOR_VERIFICATION) {
                     isValidTransition = true;
                 }
                 break;
