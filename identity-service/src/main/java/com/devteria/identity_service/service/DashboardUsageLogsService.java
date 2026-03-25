@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,5 +40,15 @@ public class DashboardUsageLogsService {
     public DashboardUsageLogs findById(String logId) {
         return dashboardUsageLogRepository.findById(logId)
                 .orElseThrow(() -> new WebException(ErrorCode.DASHBOARD_USAGE_LOG_NOT_FOUND));
+    }
+    public List<DashboardUsageLogs> findAllDashboardUsageLogs() {
+        return dashboardUsageLogRepository.findAll();
+    }
+    public List<DashboardUsageLogs> findAllDashboardUsageLogsByDashboardID(String dashboardId) {
+        return dashboardUsageLogRepository.findAllByDashboardId(dashboardId);
+    }
+    public List<DashboardUsageLogs> findAllDashboardUsageLogsByUser(String userId) {
+        return dashboardUsageLogRepository.findAllByUserId(userId);
+
     }
 }

@@ -1,5 +1,6 @@
 package com.devteria.identity_service.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -22,6 +23,7 @@ public class DashboardUsageLogs {
     String log_id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "dashboard_id", nullable = false)
     Dashboard dashboard;
 

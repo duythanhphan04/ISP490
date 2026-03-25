@@ -180,7 +180,7 @@ public class TicketController {
                 .build();
     }
     @PutMapping("/submit_result/{ticketID}/dashboard/{DashboardID}")
-    @Operation(summary = "Submit the result of a ticket type 4")
+    @Operation(summary = "Submit the result of a ticket type 3")
     public ApiResponse<Ticket> submitTicketResult(@PathVariable String ticketID, @PathVariable String DashboardID) {
         Ticket ticket = ticketService.submitDashboardResult(ticketID, DashboardID);
         return ApiResponse.<Ticket>builder()
@@ -190,7 +190,7 @@ public class TicketController {
                 .build();
     }
     @PutMapping("/approve-dashboard/{ticketID}")
-    @Operation(summary = "Approve a dashboard access request (Ticket Type 4)")
+    @Operation(summary = "Approve a dashboard access request (Ticket type 3)")
     public ApiResponse<Ticket> approveDashboardAccess(@PathVariable String ticketID) {
         Ticket ticket = ticketService.approveDashboardDraft(ticketID);
         return ApiResponse.<Ticket>builder()
@@ -200,7 +200,7 @@ public class TicketController {
                 .build();
     }
     @PutMapping("/reject-dashboard/{ticketID}")
-    @Operation(summary = "Reject a dashboard access request (Ticket Type 4)")
+    @Operation(summary = "Reject a dashboard access request (Ticket type 3)")
     public ApiResponse<Ticket> rejectDashboardAccess(@PathVariable String ticketID, @RequestParam String reason) {
         Ticket ticket = ticketService.rejectDashboardDraft(ticketID, reason);
         return ApiResponse.<Ticket>builder()
