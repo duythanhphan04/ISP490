@@ -39,7 +39,9 @@ public class DashboardService {
                 .url_path(request.getUrl_path())
                 .category(request.getCategory())
                 .createdBy(loggedInUser)
+                .updatedBy(loggedInUser)
                 .status(DashboardStatus.DRAFT)
+                .createdAt(Instant.now())
                 .build();
         dashboard = dashboardRepository.save(dashboard);
         systemAuditLogService.logEvent(

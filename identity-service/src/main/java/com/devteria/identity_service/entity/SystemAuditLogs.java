@@ -2,6 +2,7 @@ package com.devteria.identity_service.entity;
 
 import com.devteria.identity_service.enums.EventLog;
 import com.devteria.identity_service.enums.TargetEntity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -15,6 +16,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "system_audit_logs")
 public class SystemAuditLogs {
     @Id
