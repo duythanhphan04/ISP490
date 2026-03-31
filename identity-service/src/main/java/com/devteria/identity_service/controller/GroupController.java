@@ -8,12 +8,11 @@ import com.devteria.identity_service.entity.User;
 import com.devteria.identity_service.entity.UserGroup;
 import com.devteria.identity_service.enums.*;
 import com.devteria.identity_service.service.GroupService;
-import com.devteria.identity_service.service.SystemAuditLogService;
 import com.devteria.identity_service.service.UserGroupService;
-import com.devteria.identity_service.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +25,7 @@ public class GroupController {
     GroupService groupService;
     @Autowired
     UserGroupService userGroupService;
+    @PreAuthorize("hasRole('BI')")
     @PostMapping
     @Operation(summary = "Create a new group")
     public ApiResponse<Group> createGroup(@RequestBody @Valid GroupCreationRequest groupCreationRequest) {
@@ -46,6 +46,7 @@ public class GroupController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @GetMapping
     @Operation(summary = "Get all groups")
     public ApiResponse<List<Group>> getAllGroups() {
@@ -76,6 +77,7 @@ public class GroupController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @PutMapping("/soft-delete/{groupID}")
     @Operation(summary = "Soft delete group by ID")
     public ApiResponse<Group> softDeleteGroup(@PathVariable String groupID) {
@@ -86,6 +88,7 @@ public class GroupController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @PutMapping("/restore/{groupID}")
     @Operation(summary = "Restore soft-deleted group by ID")
     public ApiResponse<Group> restoreGroup(@PathVariable String groupID) {
@@ -96,6 +99,7 @@ public class GroupController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @PutMapping("delete/{groupID}")
     @Operation(summary = "Delete group by ID")
     public ApiResponse<Group> deleteGroup(@PathVariable String groupID) {
@@ -106,6 +110,7 @@ public class GroupController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @PutMapping("/{groupID}")
     @Operation(summary = "Update group by ID")
     public ApiResponse<Group> updateGroup(
@@ -127,6 +132,7 @@ public class GroupController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @PostMapping("/add-member/{groupID}/user/{userID}")
     @Operation(summary = "Add member to group")
     public ApiResponse<UserGroup> addMemberToGroup(@PathVariable String groupID, @PathVariable String userID) {
@@ -147,6 +153,7 @@ public class GroupController {
                 .code(1000)
                 .build();
     }
+
     @GetMapping("/groups-by-user/{userID}")
     @Operation(summary = "Get groups by user ID")
     public ApiResponse<List<Group>> getGroupsByUserID(@PathVariable String userID) {
@@ -157,6 +164,7 @@ public class GroupController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @PutMapping("/soft-remove-member/{groupID}/user/{userID}")
     @Operation(summary = "Soft remove member from group")
     public ApiResponse<UserGroup> removeMemberFromGroup(@PathVariable String groupID, @PathVariable String userID) {
@@ -168,6 +176,7 @@ public class GroupController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @PutMapping("/restore-member/{groupID}/user/{userID}")
     @Operation(summary = "Restore member to group")
     public ApiResponse<UserGroup> restoreMemberToGroup(@PathVariable String groupID, @PathVariable String userID) {

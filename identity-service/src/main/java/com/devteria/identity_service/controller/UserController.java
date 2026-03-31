@@ -19,8 +19,6 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService userService;
-    @Autowired
-    private SystemAuditLogService systemAuditLogService;
     @PostMapping
     @Operation(summary = "Create a new user", description = "Create a new user with the provided information")
     public ApiResponse<User> createUser(@RequestBody UserCreationRequest request) {
@@ -41,7 +39,7 @@ public class UserController {
                 .code(1000)
                 .build();
     }
-
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @GetMapping
     @Operation(summary = "Get all users", description = "Retrieve a list of all users")
     public ApiResponse<List<User>> getAllUsers() {
@@ -63,6 +61,7 @@ public class UserController {
                 .build();
 
     }
+    @PreAuthorize( "hasRole('ADMINISTRATOR')")
     @DeleteMapping("/{userID}")
     @Operation(summary = "Delete user by ID")
     ApiResponse<User> deleteUserByID(@PathVariable String userID) {
@@ -82,6 +81,7 @@ public class UserController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PutMapping("/soft-delete/{userID}")
     @Operation(summary = "Soft delete user by ID")
     ApiResponse<User> softDeleteUserByID(@PathVariable String userID) {
@@ -91,6 +91,7 @@ public class UserController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PutMapping("/restore/{userID}")
     @Operation(summary = "Restore soft-deleted user by ID")
     ApiResponse<User> restoreUserByID(@PathVariable String userID) {
@@ -127,6 +128,7 @@ public class UserController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PutMapping("/{userID}/department/{departmentID}")
     @Operation(summary = "Add user to department")
     ApiResponse<User> addUserToDepartment(@PathVariable String userID, @PathVariable String departmentID) {
