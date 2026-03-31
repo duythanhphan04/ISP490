@@ -34,7 +34,8 @@ public class TicketService {
                 .description(request.getDescription())
                 .status(TicketStatus.CREATED)
                 .approver(userService.getManagerByUserID(loggedInUser.getUser_id()))
-                .createdAt(java.time.Instant.now())
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
                 .build();
         ticketRepository.save(ticket);
         systemAuditLogService.logEvent(
