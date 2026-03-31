@@ -38,7 +38,7 @@ public class DepartmentController {
                 .code(1000)
                 .build();
     }
-    @PreAuthorize("hasRole('ADMINISTRATOR')")
+    @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('BI')")
     @GetMapping
     @Operation(summary = "Get all department")
     public ApiResponse<List<Department>> getAllDepartments() {

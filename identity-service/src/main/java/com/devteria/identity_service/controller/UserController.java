@@ -39,7 +39,7 @@ public class UserController {
                 .code(1000)
                 .build();
     }
-    @PreAuthorize("hasRole('ADMINISTRATOR')")
+    @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('BI')")
     @GetMapping
     @Operation(summary = "Get all users", description = "Retrieve a list of all users")
     public ApiResponse<List<User>> getAllUsers() {
