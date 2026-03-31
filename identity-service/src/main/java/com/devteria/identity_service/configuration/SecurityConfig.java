@@ -114,9 +114,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * ✅ Cấu hình user service cho OAuth2 (Google)
-     */
     private OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService() {
         return new DefaultOAuth2UserService();
     }
@@ -152,9 +149,6 @@ public class SecurityConfig {
         return jwtAuthenticationConverter;
     }
 
-    /**
-     * ✅ Password encoder cho app
-     */
     @Bean
     PasswordEncoder passwordEncoder() {
         return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder(10);
