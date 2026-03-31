@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ import java.util.List;
 public class SystemAuditLogController {
     @Autowired
     SystemAuditLogService systemAuditLogService;
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @GetMapping
     @Operation(summary = "Get all system audit logs")
     public ApiResponse<List<SystemAuditLogs>> getAllLogs() {
@@ -35,6 +37,7 @@ public class SystemAuditLogController {
                 .data(logs)
                 .build();
     }
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @GetMapping("/{logId}/details")
     @Operation(summary = "Get details of a specific audit log")
     public ApiResponse<List<SystemAuditLogsDetail>> getLogDetails( @PathVariable String logId) {

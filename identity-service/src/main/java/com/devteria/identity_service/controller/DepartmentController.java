@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class DepartmentController {
     DepartmentService departmentService;
     @Autowired
     UserService userService;
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PostMapping
     @Operation(summary = "Create a new department")
     public ApiResponse<Department> createDepartment(@RequestBody DepartmentCreationRequest request) {
@@ -36,6 +38,7 @@ public class DepartmentController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @GetMapping
     @Operation(summary = "Get all department")
     public ApiResponse<List<Department>> getAllDepartments() {
@@ -46,6 +49,7 @@ public class DepartmentController {
                 .code(1000)
                 .build();
     }
+
     @GetMapping("/{departmentID}")
     @Operation(summary = "Get department by ID")
     public ApiResponse<Department> getDepartmentByID(@PathVariable String departmentID) {
@@ -66,6 +70,7 @@ public class DepartmentController {
                 .code(1000)
                 .build();
     }
+
     @GetMapping("/manager/{managerID}")
     @Operation(summary = "Get departments by manager ID")
     public ApiResponse<List<Department>> getDepartmentsByManagerID(@PathVariable String managerID){
@@ -76,6 +81,7 @@ public class DepartmentController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @DeleteMapping
     @Operation(summary = "Delete department by ID")
     public ApiResponse<Department> deleteDepartmentByID(@RequestParam String departmentID) {
@@ -86,6 +92,7 @@ public class DepartmentController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PutMapping("/soft-delete/{departmentID}")
     @Operation(summary = "Soft delete department by ID")
     public ApiResponse<Department> softDeleteDepartmentByID(@PathVariable String departmentID) {
@@ -96,6 +103,7 @@ public class DepartmentController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PutMapping("/restore/{departmentID}")
     @Operation(summary = "Restore department by ID")
     public ApiResponse<Department> restoreDepartmentByID(@PathVariable String departmentID) {
@@ -106,6 +114,7 @@ public class DepartmentController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PutMapping("/{departmentID}")
     @Operation(summary = "Update department by ID")
     public ApiResponse<Department> updateDepartment(

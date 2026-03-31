@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,6 +38,7 @@ public class DashboardUsageLogController {
                 .message("Dashboard usage log updated successfully")
                 .build();
     }
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @GetMapping
     @Operation(summary = "Get all dashboard usage logs")
     public ApiResponse<List<DashboardUsageLogs>> getAllDashboardUsageLogs() {

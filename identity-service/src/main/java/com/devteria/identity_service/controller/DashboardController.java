@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class DashboardController {
     UserService userService;
     @Autowired
     GroupDashboardAccessService groupDashboardAccessService;
+    @PreAuthorize("hasRole('BI')")
     @PostMapping
     @Operation(summary = "Create a new dashboard")
     public ApiResponse<Dashboard> createDashboard( @RequestBody DashboardCreationRequest request) {
@@ -43,6 +45,7 @@ public class DashboardController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @GetMapping
     @Operation(summary = "Get all dashboard")
     public ApiResponse<List<Dashboard>> getAllDashboards() {
@@ -80,6 +83,7 @@ public class DashboardController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @DeleteMapping("/{dashboardID}")
     @Operation(summary = "Delete dashboard by ID")
     ApiResponse<Dashboard> deleteDashboardByID(@PathVariable String dashboardID) {
@@ -99,6 +103,7 @@ public class DashboardController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @PutMapping("/soft-delete/{dashboardID}")
     @Operation(summary = "Soft delete dashboard by ID")
     ApiResponse<Dashboard> softDeleteDashboardByID(@PathVariable String dashboardID) {
@@ -108,6 +113,7 @@ public class DashboardController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @PutMapping("/restore/{dashboardID}")
     @Operation(summary = "Restore soft-deleted dashboard by ID")
     ApiResponse<Dashboard> restoreDashboardByID(@PathVariable String dashboardID) {
@@ -117,6 +123,7 @@ public class DashboardController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @PutMapping("/{dashboardID}")
     @Operation(summary = "Update dashboard by ID")
     ApiResponse<Dashboard> updateDashboardByID(@PathVariable String dashboardID,
@@ -127,6 +134,7 @@ public class DashboardController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @PostMapping("grant-access/group/{groupID}/dashboard/{dashboardID}")
     @Operation(summary = "Grant dashboard access to group")
     public ApiResponse<GroupDashboardAccess> grantDashboardAccessToGroup(@PathVariable String groupID,
@@ -159,6 +167,7 @@ public class DashboardController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @PutMapping("/revoke-access/group/{groupID}/dashboard/{dashboardID}")
     @Operation(summary = "Revoke dashboard access from group")
     public ApiResponse<GroupDashboardAccess> revokeDashboardAccessFromGroup(@PathVariable String groupID,
@@ -171,6 +180,7 @@ public class DashboardController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @PutMapping("/restore-access/group/{groupID}/dashboard/{dashboardID}")
     @Operation(summary = "Restore dashboard access to group")
     public ApiResponse<GroupDashboardAccess> restoreDashboardAccessToGroup(@PathVariable String groupID,

@@ -9,6 +9,7 @@ import com.devteria.identity_service.service.TicketService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -149,6 +150,7 @@ public class TicketController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @PostMapping("/{ticketID}/assign/{staffID}")
     @Operation(summary = "Assign a ticket to a BI member")
     public ApiResponse<Ticket> assignTicket(@PathVariable String ticketID, @PathVariable String staffID) {
@@ -159,6 +161,7 @@ public class TicketController {
                 .code(1000)
                 .build();
     }
+
     @PostMapping("/{ticketID}/status/{status}")
     @Operation(summary = "Update the status of a ticket")
     public ApiResponse<Ticket> updateTicketStatus(@PathVariable String ticketID, @PathVariable TicketStatus status) {
@@ -169,6 +172,7 @@ public class TicketController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('BI')")
     @PostMapping("/reject/{ticketID}")
     @Operation(summary = "Reject a ticket")
     public ApiResponse<Ticket> rejectTicket(@PathVariable String ticketID, @RequestParam String reason) {
@@ -179,6 +183,7 @@ public class TicketController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('BI')")
     @PutMapping("/submit_result/{ticketID}/dashboard/{DashboardID}")
     @Operation(summary = "Submit the result of a ticket type 3")
     public ApiResponse<Ticket> submitTicketResult(@PathVariable String ticketID, @PathVariable String DashboardID) {
@@ -189,6 +194,7 @@ public class TicketController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PutMapping("/approve-dashboard/{ticketID}")
     @Operation(summary = "Approve a dashboard access request (Ticket type 3)")
     public ApiResponse<Ticket> approveDashboardAccess(@PathVariable String ticketID) {
@@ -199,6 +205,7 @@ public class TicketController {
                 .code(1000)
                 .build();
     }
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PutMapping("/reject-dashboard/{ticketID}")
     @Operation(summary = "Reject a dashboard access request (Ticket type 3)")
     public ApiResponse<Ticket> rejectDashboardAccess(@PathVariable String ticketID, @RequestParam String reason) {
