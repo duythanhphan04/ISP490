@@ -55,6 +55,7 @@ public class TicketService {
                 .description(request.getDescription())
                 .status(TicketStatus.CREATED)
                 .approver(userService.getAdminUser())
+                .updatedAt(Instant.now())
                 .assigned_staff(userService.getAdminUser())
                 .createdAt(java.time.Instant.now())
                 .build();

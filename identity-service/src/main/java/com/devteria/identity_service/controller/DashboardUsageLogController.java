@@ -38,7 +38,7 @@ public class DashboardUsageLogController {
                 .message("Dashboard usage log updated successfully")
                 .build();
     }
-    @PreAuthorize("hasRole('ADMINISTRATOR')")
+    @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('BI')")
     @GetMapping
     @Operation(summary = "Get all dashboard usage logs")
     public ApiResponse<List<DashboardUsageLogs>> getAllDashboardUsageLogs() {
