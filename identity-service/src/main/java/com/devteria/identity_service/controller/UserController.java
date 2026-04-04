@@ -1,5 +1,6 @@
 package com.devteria.identity_service.controller;
 
+import com.devteria.identity_service.dto.request.CustomerCreationRequest;
 import com.devteria.identity_service.dto.request.UserCreationRequest;
 import com.devteria.identity_service.dto.response.ApiResponse;
 import com.devteria.identity_service.entity.User;
@@ -26,6 +27,16 @@ public class UserController {
         return ApiResponse.<User>builder()
                 .data(user)
                 .message("User created successfully")
+                .code(1000)
+                .build();
+    }
+    @PostMapping("/custom")
+    @Operation(summary = "Create a new customer ", description = "Create a new customer with the provided information")
+    public ApiResponse<User> createCustomUser(@RequestBody CustomerCreationRequest request) {
+        User user = userService.createCustomUser(request);
+        return ApiResponse.<User>builder()
+                .data(user)
+                .message("Custom user created successfully")
                 .code(1000)
                 .build();
     }

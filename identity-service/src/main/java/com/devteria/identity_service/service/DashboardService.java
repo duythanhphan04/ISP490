@@ -28,7 +28,7 @@ public class DashboardService {
     DashboardRepository dashboardRepository;
     UserService userService;
     SystemAuditLogService systemAuditLogService;
-    @Transactional // 1. Đảm bảo an toàn dữ liệu
+    @Transactional
     public Dashboard createDashboard(DashboardCreationRequest request){
         User loggedInUser = userService.getLoggedInUser();
         if(dashboardRepository.existsByDashboardName(request.getDashboard_name())){

@@ -1,7 +1,7 @@
 package com.devteria.identity_service.service;
-
+import com.devteria.identity_service.configuration.SecurityConfig;
+import com.devteria.identity_service.dto.request.CustomerCreationRequest;
 import com.devteria.identity_service.dto.request.UserCreationRequest;
-import com.devteria.identity_service.dto.request.UserUpdateRequest;
 import com.devteria.identity_service.entity.Department;
 import com.devteria.identity_service.entity.User;
 import com.devteria.identity_service.enums.EventLog;
@@ -18,6 +18,8 @@ import lombok.experimental.FieldDefaults;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,7 @@ public class UserService {
     UserRepository userRepository;
     SystemAuditLogService systemAuditLogService;
     DepartmentRepository departmentRepository;
+    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
     public User createUser(UserCreationRequest userCreationRequest) {
         User user = User.builder()
                 .username(userCreationRequest.getUser_name())
@@ -40,12 +43,30 @@ public class UserService {
                 .status(UserStatus.ACTIVE)
                 .build();
         systemAuditLogService.logEvent(
-                getLoggedInUser(),
+                user,
                 EventLog.USER_CREATED,
                 TargetEntity.USER,
                 user.getUser_id()
         );
         return userRepository.save(user);
+    }
+    public User createCustomUser(CustomerCreationRequest user) {
+        User customUser = User.builder()
+                .username(user.getUser_name())
+                .email(user.getEmail())
+                .password(passwordEncoder.encode(user.getPassword()))
+                .role(SystemRole.CUSTOMER)
+                .createdAt(Instant.now())
+                .status(UserStatus.INACTIVE)
+                .build();
+        User savedUser = userRepository.save(customUser);
+        systemAuditLogService.logEvent(
+                savedUser,
+                EventLog.CUSTOMER_CREATED,
+                TargetEntity.USER,
+                savedUser.getUser_id()
+        );
+        return savedUser ;
     }
     public List<User> getAllUsers() {
         return userRepository.findAll();

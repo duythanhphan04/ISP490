@@ -32,6 +32,10 @@ public class User {
     @AuditableField("username")
     String username;
 
+    @Column(name = "password", nullable = false)
+    @AuditableField("password")
+    String password;
+
     @Size(max = 255)
     @Column(name = "email")
     @AuditableField("email")
