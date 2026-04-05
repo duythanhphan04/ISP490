@@ -3,6 +3,8 @@ import com.devteria.identity_service.configuration.SecurityConfig;
 import com.devteria.identity_service.dto.request.CustomerCreationRequest;
 import com.devteria.identity_service.dto.request.UserCreationRequest;
 import com.devteria.identity_service.entity.Department;
+import com.devteria.identity_service.entity.ForgotPasswordToken;
+import com.devteria.identity_service.entity.MailBody;
 import com.devteria.identity_service.entity.User;
 import com.devteria.identity_service.enums.EventLog;
 import com.devteria.identity_service.enums.SystemRole;
@@ -11,7 +13,9 @@ import com.devteria.identity_service.enums.UserStatus;
 import com.devteria.identity_service.exception.ErrorCode;
 import com.devteria.identity_service.exception.WebException;
 import com.devteria.identity_service.repository.DepartmentRepository;
+import com.devteria.identity_service.repository.ForgotPasswordTokenRepository;
 import com.devteria.identity_service.repository.UserRepository;
+import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,7 +28,10 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Random;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -33,7 +40,9 @@ public class UserService {
     UserRepository userRepository;
     SystemAuditLogService systemAuditLogService;
     DepartmentRepository departmentRepository;
+    EmailSenderService EmailService;
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+    ForgotPasswordTokenRepository forgotPasswordTokenRepository;
     public User createUser(UserCreationRequest userCreationRequest) {
         User user = User.builder()
                 .username(userCreationRequest.getUser_name())
@@ -176,5 +185,63 @@ public class UserService {
             throw new WebException(ErrorCode.MANAGER_NOT_FOUND);
         }
         return manager;
+    }
+    @Transactional
+    public void generateAndSendOtp(String email) {
+        if(email.endsWith("fpt.edu.vn")) {
+            throw new WebException(ErrorCode.INVALID_EMAIL_DOMAIN);
+        }
+        User user = getUserByEmail(email);
+        forgotPasswordTokenRepository.findByUser(user).ifPresent(existingToken -> {
+            Instant createdAt = existingToken.getExpiryTime().minus(2, ChronoUnit.MINUTES);
+            long secondsSinceLastRequest = ChronoUnit.SECONDS.between(createdAt, Instant.now());
+            if (secondsSinceLastRequest < 60) {
+                throw new WebException(ErrorCode.PLEASE_WAIT_BEFORE_RESENDING_OTP);
+            }
+        });
+        String otp = String.format("%06d", new Random().nextInt(999999));
+        ForgotPasswordToken token = forgotPasswordTokenRepository.findByUser(user).orElse(new ForgotPasswordToken());
+        token.setUser(user);
+        token.setOtpCode(otp);
+        token.setExpiryTime(Instant.now().plus(2, ChronoUnit.MINUTES));
+        forgotPasswordTokenRepository.save(token);
+        try {
+            MailBody mailBody = MailBody.builder()
+                    .to(email)
+                    .subject("Your OTP Code")
+                    .body("Your OTP code is: " + otp + ". It will expired in 2 minutes.")
+                    .build();
+            systemAuditLogService.logEvent(
+                    user,
+                    EventLog.OTP_GENERATED,
+                    TargetEntity.USER,
+                    user.getUser_id()
+            );
+             EmailService.sendEmail(mailBody);
+        }catch (MessagingException e){
+            throw new WebException(ErrorCode.UNCATEGORIZED);
+        }
+    }
+    @Transactional
+    public void verifyOtpAndResetPassword(String email, String otp, String newPassword) {
+        User user = getUserByEmail(email);
+        ForgotPasswordToken token = forgotPasswordTokenRepository.findByUser(user)
+                .orElseThrow(() -> new WebException(ErrorCode.INVALID_OTP));
+        if(!token.getOtpCode().equals(otp)) {
+            throw new WebException(ErrorCode.INVALID_OTP);
+        }
+        if(token.getExpiryTime().isBefore(Instant.now())) {
+            forgotPasswordTokenRepository.delete(token);
+            throw new WebException(ErrorCode.EXPIRED_OTP);
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        forgotPasswordTokenRepository.delete(token);
+        systemAuditLogService.logEvent(
+                user,
+                EventLog.PASSWORD_RESET,
+                TargetEntity.CUSTOMER,
+                user.getUser_id()
+        );
     }
 }

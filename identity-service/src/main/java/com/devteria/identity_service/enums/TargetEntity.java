@@ -5,5 +5,6 @@ public enum TargetEntity {
     GROUP,
     DEPARTMENT,
     DASHBOARD,
-    TICKET
+    TICKET,
+    CUSTOMER
 }

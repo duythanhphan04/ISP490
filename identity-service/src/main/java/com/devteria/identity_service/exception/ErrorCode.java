@@ -36,7 +36,11 @@ public enum ErrorCode {
     INVALID_TICKET_STATUS_UPDATE (1028, "Invalid ticket status update", HttpStatus.BAD_REQUEST),
     INVALID_DASHBOARD_STATUS (1030, "Invalid dashboard status update", HttpStatus.BAD_REQUEST),
     MISSING_REJECTION_REASON (1029, "Missing rejection reason for ticket rejection", HttpStatus.BAD_REQUEST),
-    DASHBOARD_USAGE_LOG_NOT_FOUND (1031, "Dashboard usage log not found", HttpStatus.BAD_REQUEST);
+    DASHBOARD_USAGE_LOG_NOT_FOUND (1031, "Dashboard usage log not found", HttpStatus.BAD_REQUEST),
+    INVALID_OTP (1032, "Invalid OTP", HttpStatus.BAD_REQUEST),
+    EXPIRED_OTP (1033, "Expired OTP", HttpStatus.BAD_REQUEST),
+    PLEASE_WAIT_BEFORE_RESENDING_OTP (1034, "Please wait before resending OTP", HttpStatus.BAD_REQUEST),
+    INVALID_EMAIL_DOMAIN (1035, "Invalid email domain", HttpStatus.BAD_REQUEST);
 
   private final int code;
   private final String message;

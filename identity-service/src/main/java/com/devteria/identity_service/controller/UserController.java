@@ -149,5 +149,22 @@ public class UserController {
                 .code(1000)
                 .build();
     }
-
+    @PostMapping("/send-otp")
+    @Operation(summary = "Send OTP to user's email for password reset")
+    ApiResponse<Void> sendOtp(@RequestParam String email) {
+        userService.generateAndSendOtp(email);
+        return ApiResponse.<Void>builder()
+                .message("OTP sent successfully")
+                .code(1000)
+                .build();
+    }
+    @PostMapping("/reset-password")
+    @Operation(summary = "Reset user's password using OTP")
+    ApiResponse<Void> resetPassword(@RequestParam String email, @RequestParam String otp, @RequestParam String newPassword) {
+        userService.verifyOtpAndResetPassword(email, otp, newPassword);
+        return ApiResponse.<Void>builder()
+                .message("Password reset successfully")
+                .code(1000)
+                .build();
+    }
 }

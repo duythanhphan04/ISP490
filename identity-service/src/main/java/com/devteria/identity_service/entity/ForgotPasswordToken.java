@@ -7,26 +7,28 @@ import lombok.experimental.FieldDefaults;
 import java.time.Instant;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "forgot_password_token")
 public class ForgotPasswordToken {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "department_id", nullable = false)
+    @Column(name = "id", nullable = false)
     String id;
 
     @Column(name = "otp_code", length = 6, nullable = false)
     String otpCode;
 
     @Column(name = "expiry_time", nullable = false)
-    private Instant expiryTime;
+    Instant expiryTime;
 
     // Quan hệ 1-1 với bảng User
     @OneToOne
-    @JoinColumn(name = "user_id",nullable = false)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     User user;
 }
