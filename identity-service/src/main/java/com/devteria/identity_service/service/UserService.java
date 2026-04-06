@@ -1,5 +1,4 @@
 package com.devteria.identity_service.service;
-import com.devteria.identity_service.configuration.SecurityConfig;
 import com.devteria.identity_service.dto.request.CustomerCreationRequest;
 import com.devteria.identity_service.dto.request.UserCreationRequest;
 import com.devteria.identity_service.entity.Department;
