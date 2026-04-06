@@ -239,4 +239,7 @@ public class UserService {
                 user.getUser_id()
         );
     }
+    public List<User> getUserByRoleAndStatus(SystemRole role, UserStatus status) {
+        return userRepository.findByRoleAndStatus(role, status);
+    }
 }

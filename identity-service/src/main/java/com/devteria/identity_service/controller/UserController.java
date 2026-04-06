@@ -167,4 +167,13 @@ public class UserController {
                 .code(1000)
                 .build();
     }
+    @GetMapping("/role/{role}/status/{status}")
+    @Operation(summary = "Get users by role and status")
+    ApiResponse<List<User>> getUsersByRoleAndStatus(@PathVariable SystemRole role, @PathVariable UserStatus status) {
+        return ApiResponse.<List<User>>builder()
+                .data(userService.getUserByRoleAndStatus(role, status))
+                .message("Users fetched successfully")
+                .code(1000)
+                .build();
+    }
 }
