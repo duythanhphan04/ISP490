@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
+
 @RestController // Đã bỏ @Builder
 @RequestMapping("/email")
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class EmailController {
     public ApiResponse<EmailResponse> sendEmail(@RequestBody MailBody mailBody) throws MessagingException {
         emailSenderService.sendEmail(mailBody);
         EmailResponse emailResponse = new EmailResponse();
-        emailResponse.setToEmail(mailBody.to());
+        emailResponse.setToEmail(Arrays.toString(mailBody.to()));
         emailResponse.setSubject(mailBody.subject());
         emailResponse.setBody(mailBody.body());
         emailResponse.setSent(true);

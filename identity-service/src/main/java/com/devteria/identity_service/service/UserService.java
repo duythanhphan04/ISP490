@@ -204,22 +204,18 @@ public class UserService {
         token.setOtpCode(otp);
         token.setExpiryTime(Instant.now().plus(2, ChronoUnit.MINUTES));
         forgotPasswordTokenRepository.save(token);
-        try {
-            MailBody mailBody = MailBody.builder()
-                    .to(email)
-                    .subject("Your OTP Code")
-                    .body("Your OTP code is: " + otp + ". It will expired in 2 minutes.")
-                    .build();
-            systemAuditLogService.logEvent(
-                    user,
-                    EventLog.OTP_GENERATED,
-                    TargetEntity.USER,
-                    user.getUser_id()
-            );
-             EmailService.sendEmail(mailBody);
-        }catch (MessagingException e){
-            throw new WebException(ErrorCode.UNCATEGORIZED);
-        }
+        MailBody mailBody = MailBody.builder()
+                .to(new String[]{email})
+                .subject("Your OTP Code")
+                .body("Your OTP code is: " + otp + ". It will expired in 2 minutes.")
+                .build();
+        systemAuditLogService.logEvent(
+                user,
+                EventLog.OTP_GENERATED,
+                TargetEntity.USER,
+                user.getUser_id()
+        );
+        EmailService.sendEmail(mailBody);
     }
     @Transactional
     public void verifyOtpAndResetPassword(String email, String otp, String newPassword) {
