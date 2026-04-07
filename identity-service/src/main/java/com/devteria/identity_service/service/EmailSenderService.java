@@ -41,7 +41,7 @@ public class EmailSenderService {
                 .toList();
         body.put("to", toList);
         body.put("subject", mailBody.subject());
-        body.put("textContent", mailBody.body());
+        body.put("htmlContent", mailBody.body());
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
         try {
             restTemplate.exchange(url, HttpMethod.POST, request, String.class);

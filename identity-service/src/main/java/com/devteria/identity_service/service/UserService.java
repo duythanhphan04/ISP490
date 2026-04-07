@@ -14,7 +14,8 @@ import com.devteria.identity_service.exception.WebException;
 import com.devteria.identity_service.repository.DepartmentRepository;
 import com.devteria.identity_service.repository.ForgotPasswordTokenRepository;
 import com.devteria.identity_service.repository.UserRepository;
-import jakarta.mail.MessagingException;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,6 +28,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
+import java.time.Year;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Random;
@@ -40,6 +42,7 @@ public class UserService {
     SystemAuditLogService systemAuditLogService;
     DepartmentRepository departmentRepository;
     EmailSenderService EmailService;
+    TemplateEngine templateEngine;
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
     ForgotPasswordTokenRepository forgotPasswordTokenRepository;
     public User createUser(UserCreationRequest userCreationRequest) {
@@ -204,10 +207,16 @@ public class UserService {
         token.setOtpCode(otp);
         token.setExpiryTime(Instant.now().plus(2, ChronoUnit.MINUTES));
         forgotPasswordTokenRepository.save(token);
+        Context context = new Context();
+        context.setVariable("username", user.getUsername());
+        context.setVariable("digits", otp);
+        context.setVariable("expiresMinutes", 2);
+        context.setVariable("currentYear", Year.now().getValue());
+        String htmlTemplate = templateEngine.process("otp-email", context);
         MailBody mailBody = MailBody.builder()
                 .to(new String[]{email})
-                .subject("Your OTP Code")
-                .body("Your OTP code is: " + otp + ". It will expired in 2 minutes.")
+                .subject("[ICSAS] Password Reset Request")
+                .body(htmlTemplate)
                 .build();
         systemAuditLogService.logEvent(
                 user,
