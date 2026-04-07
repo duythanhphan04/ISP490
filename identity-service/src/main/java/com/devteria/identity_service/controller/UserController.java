@@ -1,5 +1,6 @@
 package com.devteria.identity_service.controller;
 
+import com.devteria.identity_service.dto.request.ChangePasswordRequest;
 import com.devteria.identity_service.dto.request.CustomerCreationRequest;
 import com.devteria.identity_service.dto.request.UserCreationRequest;
 import com.devteria.identity_service.dto.response.ApiResponse;
@@ -173,6 +174,15 @@ public class UserController {
         return ApiResponse.<List<User>>builder()
                 .data(userService.getUserByRoleAndStatus(role, status))
                 .message("Users fetched successfully")
+                .code(1000)
+                .build();
+    }
+    @PostMapping("/change-password")
+    @Operation(summary = "Change logged-in user's password")
+    ApiResponse<Void> changePassword(@RequestBody ChangePasswordRequest request) {
+        userService.changePassword(request);
+        return ApiResponse.<Void>builder()
+                .message("Password changed successfully")
                 .code(1000)
                 .build();
     }

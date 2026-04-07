@@ -1,4 +1,5 @@
 package com.devteria.identity_service.service;
+import com.devteria.identity_service.dto.request.ChangePasswordRequest;
 import com.devteria.identity_service.dto.request.CustomerCreationRequest;
 import com.devteria.identity_service.dto.request.UserCreationRequest;
 import com.devteria.identity_service.entity.Department;
@@ -250,5 +251,22 @@ public class UserService {
     }
     public List<User> getUserByRoleAndStatus(SystemRole role, UserStatus status) {
         return userRepository.findByRoleAndStatus(role, status);
+    }
+    public void changePassword(ChangePasswordRequest changePasswordRequest) {
+        User user = getLoggedInUser();
+        if(!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmNewPassword())) {
+            throw new WebException(ErrorCode.PASSWORD_CONFIRMATION_MISMATCH);
+        }
+        if(!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
+            throw new WebException(ErrorCode.WRONG_OLD_PASSWORD);
+        }
+        user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        userRepository.save(user);
+        systemAuditLogService.logEvent(
+                user,
+                EventLog.PASSWORD_RESET,
+                TargetEntity.USER,
+                user.getUser_id()
+        );
     }
 }

@@ -1,5 +1,6 @@
 package com.devteria.identity_service.dto.request;
 
+import com.devteria.identity_service.enums.DepartmentType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,4 +12,5 @@ import lombok.experimental.FieldDefaults;
 public class DepartmentCreationRequest {
     String department_name;
     String managerId;
+    DepartmentType department_type;
 }

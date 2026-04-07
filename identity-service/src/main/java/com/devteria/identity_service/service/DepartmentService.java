@@ -31,6 +31,7 @@ public class DepartmentService {
         Department department = Department.builder()
                 .department_name(request.getDepartment_name())
                 .manager(userService.getUserByID(request.getManagerId()))
+                .department_type(request.getDepartment_type())
                 .status(DepartmentStatus.ACTIVE)
                 .build();
         systemAuditLogService.logEvent(
@@ -88,6 +89,7 @@ public class DepartmentService {
         Department oldDepartmentSnapshot = Department.builder()
                 .department_name(department.getDepartment_name())
                 .manager(department.getManager())
+                .department_type(department.getDepartment_type())
                 .status(department.getStatus())
                 .build();
         if(request.getDepartment_name() != null){

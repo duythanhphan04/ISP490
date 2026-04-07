@@ -3,6 +3,7 @@ package com.devteria.identity_service.entity;
 import com.devteria.identity_service.annotation.AuditableField;
 import com.devteria.identity_service.enums.DashboardCategory;
 import com.devteria.identity_service.enums.DepartmentStatus;
+import com.devteria.identity_service.enums.DepartmentType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -26,6 +27,10 @@ public class Department {
     @Column(name = "department_name", nullable = false)
     @AuditableField("department_name")
     String department_name;
+
+    @Column(name = "department_type", nullable = false)
+    @AuditableField("department_type")
+    DepartmentType department_type;
 
     @ToString.Exclude 
     @ManyToOne (fetch = FetchType.LAZY)
