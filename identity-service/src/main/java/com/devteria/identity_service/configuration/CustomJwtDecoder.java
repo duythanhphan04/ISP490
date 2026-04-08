@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.util.Objects;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -19,9 +20,8 @@ import org.springframework.stereotype.Component;
 public class CustomJwtDecoder implements JwtDecoder {
   private final AuthenticationService authenticationService;
   private NimbusJwtDecoder jwtDecoder;
-  protected static final String SIGNER_KEY =
-      "p7cHINXNIOg7JEYDrVOYKzMREMuZtAtuZzWsz00TyCX+CikSXSjoLImFBx6ZrsJ6";
-
+  @Value("${jwt.signer-key}")
+  private String SIGNER_KEY;
   @Override
   public Jwt decode(String token) throws JwtException {
     try {
