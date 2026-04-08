@@ -30,6 +30,7 @@ public class Department {
 
     @Column(name = "department_type", nullable = false)
     @AuditableField("department_type")
+    @Enumerated(EnumType.STRING)
     DepartmentType department_type;
 
     @ToString.Exclude 
