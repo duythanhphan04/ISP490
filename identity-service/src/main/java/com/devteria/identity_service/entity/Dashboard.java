@@ -30,7 +30,7 @@ public class Dashboard {
     @AuditableField("dashboard_name")
     String dashboard_name;
 
-    @Column(name = "url_path", nullable = false)
+    @Column(name = "url_path", length = 1000 ,nullable = false)
     @AuditableField("url_path")
     String url_path;
 
