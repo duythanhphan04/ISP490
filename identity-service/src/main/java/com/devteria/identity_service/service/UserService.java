@@ -63,6 +63,9 @@ public class UserService {
         return userRepository.save(user);
     }
     public User createCustomUser(CustomerCreationRequest user) {
+        if(userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new WebException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
         User customUser = User.builder()
                 .username(user.getUser_name())
                 .email(user.getEmail())

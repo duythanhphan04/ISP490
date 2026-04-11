@@ -42,7 +42,9 @@ public enum ErrorCode {
     PLEASE_WAIT_BEFORE_RESENDING_OTP (1034, "Please wait before resending OTP", HttpStatus.BAD_REQUEST),
     INVALID_EMAIL_DOMAIN (1035, "Invalid email domain", HttpStatus.BAD_REQUEST),
     PASSWORD_CONFIRMATION_MISMATCH (1036, "Password confirmation does not match", HttpStatus.BAD_REQUEST),
-    WRONG_OLD_PASSWORD (1037, "Wrong old password", HttpStatus.BAD_REQUEST);
+    WRONG_OLD_PASSWORD (1037, "Wrong old password", HttpStatus.BAD_REQUEST),
+    EMAIL_ALREADY_EXISTS (1038, "Email already exists", HttpStatus.BAD_REQUEST),
+    USER_INACTIVE (1039, "User is inactive", HttpStatus.FORBIDDEN);
   private final int code;
   private final String message;
   private final HttpStatusCode httpStatusCode;

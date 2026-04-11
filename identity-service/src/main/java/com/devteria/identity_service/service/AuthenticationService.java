@@ -118,6 +118,7 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByEmail(request.getEmail())
                         .orElseThrow(() -> new WebException(ErrorCode.WRONG_CREDENTIALS));
+        if(user.getStatus() != UserStatus.ACTIVE) throw new WebException(ErrorCode.USER_INACTIVE);
 //        boolean isPasswordMatch = passwordEncoder.matches(request.getPassword(), user.getPassword());
 //        if (!isPasswordMatch) throw new WebException(ErrorCode.WRONG_CREDENTIALS);
         var token = generateToken(user);

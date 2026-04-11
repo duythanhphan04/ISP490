@@ -91,9 +91,11 @@ public class TicketService {
                 .status(ticket.getStatus())
                 .assigned_staff(ticket.getAssigned_staff())
                 .build();
-        if (ticket.getStatus() == TicketStatus.APPROVED) {
+        if (ticket.getStatus() == TicketStatus.APPROVED ) {
             ticket.setAssigned_staff(staff);
             ticket.setStatus(TicketStatus.IN_PROGRESS);
+        } else if (ticket.getStatus() == TicketStatus.IN_PROGRESS) {
+            ticket.setAssigned_staff(staff);
         } else {
             throw new WebException(ErrorCode.INVALID_TICKET_STATUS_UPDATE);
         }
