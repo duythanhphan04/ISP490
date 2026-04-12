@@ -97,8 +97,7 @@ public class AuthenticationService {
                                 .build());
         var userInfo = outboundUserClient.getUserInfo("json", response.getAccessToken());
         log.info("userInfo: " + userInfo);
-        var user =
-                userRepository
+        var user = userRepository
                         .findByUsername(userInfo.getName())
                         .orElseGet(
                                 () ->

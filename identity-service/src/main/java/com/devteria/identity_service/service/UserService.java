@@ -253,6 +253,19 @@ public class UserService {
                 user.getUser_id()
         );
     }
+    public void verifyOtp(String email, String otp) {
+        User user = getUserByEmail(email);
+        ForgotPasswordToken token = forgotPasswordTokenRepository.findByUser(user)
+                .orElseThrow(() -> new WebException(ErrorCode.INVALID_OTP));
+        if (token.getExpiryTime().isBefore(Instant.now())) {
+            forgotPasswordTokenRepository.delete(token);
+            throw new WebException(ErrorCode.EXPIRED_OTP);
+        }
+        if (!token.getOtpCode().equals(otp)) {
+            throw new WebException(ErrorCode.INVALID_OTP);
+        }
+        forgotPasswordTokenRepository.delete(token);
+    }
     public List<User> getUserByRoleAndStatus(SystemRole role, UserStatus status) {
         return userRepository.findByRoleAndStatus(role, status);
     }

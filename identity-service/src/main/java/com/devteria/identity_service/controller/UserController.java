@@ -186,4 +186,13 @@ public class UserController {
                 .code(1000)
                 .build();
     }
+    @PostMapping("/verify-otp")
+    @Operation(summary = "Verify OTP for password reset")
+    ApiResponse<Void> verifyOtp(@RequestParam String email, @RequestParam String otp) {
+        userService.verifyOtp(email, otp);
+        return ApiResponse.<Void>builder()
+                .message("OTP verified successfully")
+                .code(1000)
+                .build();
+    }
 }
