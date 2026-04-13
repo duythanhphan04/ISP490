@@ -1,6 +1,7 @@
 package com.devteria.identity_service.configuration;
 
 import com.devteria.identity_service.entity.User;
+import com.devteria.identity_service.enums.UserStatus;
 import com.devteria.identity_service.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,16 +89,19 @@ public class SecurityConfig {
                             String name = oAuth2User.getAttribute("name");
                             // Tạo hoặc lấy user từ DB
                             User user = authenticationService.findOrCreateUser(email, name);
-
+                            if(!user.getEmail().endsWith("@fpt.edu.vn")) {
+                                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Vui lòng đăng nhập bằng email công ty.");
+                                return;
+                            }
+                            if(user.getStatus() == UserStatus.INACTIVE) {
+                                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Tài khoản của bạn đã bị khóa.");
+                                return;
+                            }
                             OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
-
                             // Lấy access token gốc của Google
                             OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
                                     oauthToken.getAuthorizedClientRegistrationId(),
                                     oauthToken.getName());
-
-                            String googleAccessToken = client.getAccessToken().getTokenValue();
-
                             // Sinh JWT app token
                             String appToken = authenticationService.generateToken(user);
 
