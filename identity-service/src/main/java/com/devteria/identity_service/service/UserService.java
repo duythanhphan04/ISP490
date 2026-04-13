@@ -293,8 +293,10 @@ public class UserService {
             throw new WebException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
         RegistrationToken token = registrationTokenRepository.findByEmail(email).orElse(new RegistrationToken());
-        if(token.getExpiryTime().isAfter(LocalDateTime.now().plusMinutes(4))) {
-            throw new WebException(ErrorCode.PLEASE_WAIT_BEFORE_RESENDING_OTP);
+        if(token.getExpiryTime()!=null){
+            if(token.getExpiryTime().isAfter(LocalDateTime.now().plusMinutes(4))) {
+                throw new WebException(ErrorCode.PLEASE_WAIT_BEFORE_RESENDING_OTP);
+            }
         }
         String otp = String.format("%06d", new Random().nextInt(999999));
         token.setEmail(email);
