@@ -21,7 +21,7 @@ public class RegistrationToken {
     @Column(name = "id", nullable = false)
     String id;
 
-    @Column(name = "email", length = 6, nullable = false)
+    @Column(name = "email", nullable = false)
     String email;
 
     @Column(name = "otp_code", length = 6, nullable = false)
