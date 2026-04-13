@@ -289,6 +289,7 @@ public class UserService {
         );
     }
     public void generateRegistrationOtpAndSendEmail(String email) {
+        System.out.println("Generating OTP for email: " + email);
         String registrationOtpPrefix = "registration_otp:";
         long OtpExpirationMinutes = 2;
         if(email.endsWith("fpt.edu.vn")) {
