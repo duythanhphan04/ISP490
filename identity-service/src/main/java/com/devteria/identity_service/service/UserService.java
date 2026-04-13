@@ -15,6 +15,7 @@ import com.devteria.identity_service.exception.WebException;
 import com.devteria.identity_service.repository.DepartmentRepository;
 import com.devteria.identity_service.repository.ForgotPasswordTokenRepository;
 import com.devteria.identity_service.repository.UserRepository;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import lombok.AccessLevel;
@@ -33,6 +34,7 @@ import java.time.Year;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +48,7 @@ public class UserService {
     TemplateEngine templateEngine;
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
     ForgotPasswordTokenRepository forgotPasswordTokenRepository;
+    StringRedisTemplate redisTemplate;
     public User createUser(UserCreationRequest userCreationRequest) {
         User user = User.builder()
                 .username(userCreationRequest.getUser_name())
@@ -284,5 +287,43 @@ public class UserService {
                 TargetEntity.USER,
                 user.getUser_id()
         );
+    }
+    public void generateRegistrationOtpAndSendEmail(String email) {
+        String registrationOtpPrefix = "registration_otp:";
+        long OtpExpirationMinutes = 2;
+        if(email.endsWith("fpt.edu.vn")) {
+            throw new WebException(ErrorCode.INVALID_EMAIL_DOMAIN);
+        }
+        if(userRepository.findByEmail(email).isPresent()) {
+            throw new WebException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+        Long expire = redisTemplate.getExpire(registrationOtpPrefix + email, TimeUnit.SECONDS);
+        if(expire > OtpExpirationMinutes * 60 - 60) {
+            throw new WebException(ErrorCode.PLEASE_WAIT_BEFORE_RESENDING_OTP);
+        }
+        String otp = String.format("%06d", new Random().nextInt(999999));
+        redisTemplate.opsForValue().set(registrationOtpPrefix + email, otp, OtpExpirationMinutes, TimeUnit.MINUTES);
+        Context context = new Context();
+        context.setVariable("digits", otp);
+        context.setVariable("currentYear", Year.now().getValue());
+        String htmlTemplate = templateEngine.process("registration-otp-email", context);
+        MailBody mailBody = MailBody.builder()
+                .to(new String[]{email})
+                .subject("[ICSAS] Registration OTP")
+                .body(htmlTemplate)
+                .build();
+        EmailService.sendEmail(mailBody);
+    }
+    public boolean verifyRegistrationOtp(String email, String otp) {
+        String key = "registration_otp:" + email;
+        String storedOtp = redisTemplate.opsForValue().get(key);
+        if (storedOtp == null) {
+            throw new WebException(ErrorCode.EXPIRED_OTP);
+        }
+        if (!storedOtp.equals(otp)) {
+            throw new WebException(ErrorCode.INVALID_OTP);
+        }
+        redisTemplate.delete(key);
+        return true;
     }
 }

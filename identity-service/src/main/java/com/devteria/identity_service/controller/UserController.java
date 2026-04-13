@@ -195,4 +195,22 @@ public class UserController {
                 .code(1000)
                 .build();
     }
+    @PostMapping("/generate-registration-otp")
+    @Operation(summary = "Generate OTP for user registration")
+    ApiResponse<Void> generateRegistrationOtp(@RequestParam String email) {
+        userService.generateRegistrationOtpAndSendEmail(email);
+        return ApiResponse.<Void>builder()
+                .message("Registration OTP generated and sent successfully")
+                .code(1000)
+                .build();
+    }
+    @PostMapping("/verify-registration-otp")
+    @Operation(summary = "Verify OTP for user registration")
+    ApiResponse<Void> verifyRegistrationOtp(@RequestParam String email, @RequestParam String otp) {
+        userService.verifyRegistrationOtp(email, otp);
+        return ApiResponse.<Void>builder()
+                .message("Registration OTP verified successfully")
+                .code(1000)
+                .build();
+    }
 }
