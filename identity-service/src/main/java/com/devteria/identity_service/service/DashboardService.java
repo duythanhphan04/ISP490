@@ -28,6 +28,7 @@ public class DashboardService {
     DashboardRepository dashboardRepository;
     UserService userService;
     SystemAuditLogService systemAuditLogService;
+    UserGroupService userGroupService;
     @Transactional
     public Dashboard createDashboard(DashboardCreationRequest request){
         User loggedInUser = userService.getLoggedInUser();
@@ -128,5 +129,16 @@ public class DashboardService {
 
     public List<Dashboard> getDashboardsByStatus(DashboardStatus status) {
         return dashboardRepository.findAllByStatus(status);
+    }
+    public Dashboard getDashboardByIdAndCheckAccess(String dashboardId) {
+        User loggedInUser = userService.getLoggedInUser();
+        Dashboard dashboard = getDashboardById(dashboardId);
+        if (!hasAccess(dashboardId, loggedInUser.getUser_id())) {
+            throw new WebException(ErrorCode.ACCESS_DASHBOARD_DENIED);
+        }
+        return dashboard;
+    }
+    public boolean hasAccess(String dashboardId, String userId) {
+        return dashboardRepository.checkDasboardAccess(userId, dashboardId);
     }
 }

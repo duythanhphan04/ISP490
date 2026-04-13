@@ -1,9 +1,6 @@
 package com.devteria.identity_service.service;
 
-import com.devteria.identity_service.entity.Dashboard;
-import com.devteria.identity_service.entity.Group;
-import com.devteria.identity_service.entity.GroupDashboardAccess;
-import com.devteria.identity_service.entity.User;
+import com.devteria.identity_service.entity.*;
 import com.devteria.identity_service.enums.GroupDashboardStatus;
 import com.devteria.identity_service.exception.ErrorCode;
 import com.devteria.identity_service.exception.WebException;
@@ -89,5 +86,4 @@ public class GroupDashboardAccessService {
         return groupDashboardAccessRepository.findByGroupAndDashboard(groupId, dashboardId)
                 .orElseThrow(() -> new WebException(ErrorCode.GROUP_DASHBOARD_ACCESS_NOT_FOUND));
     }
-
 }

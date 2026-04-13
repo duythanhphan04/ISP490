@@ -204,4 +204,14 @@ public class DashboardController {
                 .code(1000)
                 .build();
     }
+    @GetMapping("/check-access/{dashboardID}")
+    @Operation(summary = "Get dashboard if logged-in user has access to a dashboard")
+    public ApiResponse<Dashboard> checkDashboardAccessForLoggedInUser(@PathVariable String dashboardID) {
+        Dashboard dashboard = dashboardService.getDashboardByIdAndCheckAccess(dashboardID);
+        return ApiResponse.<Dashboard>builder()
+                .data(dashboard)
+                .message("Dashboard access check completed successfully")
+                .code(1000)
+                .build();
+    }
 }

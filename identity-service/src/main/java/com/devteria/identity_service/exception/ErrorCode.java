@@ -44,7 +44,8 @@ public enum ErrorCode {
     PASSWORD_CONFIRMATION_MISMATCH (1036, "Password confirmation does not match", HttpStatus.BAD_REQUEST),
     WRONG_OLD_PASSWORD (1037, "Wrong old password", HttpStatus.BAD_REQUEST),
     EMAIL_ALREADY_EXISTS (1038, "Email already exists", HttpStatus.BAD_REQUEST),
-    USER_INACTIVE (1039, "User is inactive", HttpStatus.FORBIDDEN);
+    USER_INACTIVE (1039, "User is inactive", HttpStatus.FORBIDDEN),
+    ACCESS_DASHBOARD_DENIED(1040, "Access denied", HttpStatus.FORBIDDEN);
   private final int code;
   private final String message;
   private final HttpStatusCode httpStatusCode;

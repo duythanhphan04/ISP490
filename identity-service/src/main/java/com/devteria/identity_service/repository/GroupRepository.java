@@ -1,6 +1,7 @@
 package com.devteria.identity_service.repository;
 
 import com.devteria.identity_service.entity.Group;
+import com.devteria.identity_service.entity.UserGroup;
 import com.devteria.identity_service.enums.GroupStatus;
 import com.devteria.identity_service.enums.GroupType;
 import org.springframework.data.jpa.repository.JpaRepository;

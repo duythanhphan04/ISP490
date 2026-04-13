@@ -4,6 +4,7 @@ import com.devteria.identity_service.dto.request.GroupCreationRequest;
 import com.devteria.identity_service.dto.request.GroupUpdateRequest;
 import com.devteria.identity_service.entity.Group;
 import com.devteria.identity_service.entity.User;
+import com.devteria.identity_service.entity.UserGroup;
 import com.devteria.identity_service.enums.EventLog;
 import com.devteria.identity_service.enums.GroupStatus;
 import com.devteria.identity_service.enums.GroupType;

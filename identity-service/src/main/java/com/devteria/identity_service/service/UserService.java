@@ -212,7 +212,6 @@ public class UserService {
         token.setExpiryTime(Instant.now().plus(2, ChronoUnit.MINUTES));
         forgotPasswordTokenRepository.save(token);
         Context context = new Context();
-        System.out.println("abc");
         context.setVariable("username", user.getUsername());
         context.setVariable("digits", otp);
         context.setVariable("expiresMinutes", 2);
