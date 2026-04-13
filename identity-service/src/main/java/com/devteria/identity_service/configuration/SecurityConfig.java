@@ -77,6 +77,7 @@ public class SecurityConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain oauth2SecurityFilterChain(HttpSecurity http) throws Exception {
+        String frontendLoginUrl = "https://icsas.systems/signin"; // URL Frontend
         http
                 .securityMatcher("/login/**", "/oauth2/**")
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
@@ -90,11 +91,11 @@ public class SecurityConfig {
                             // Tạo hoặc lấy user từ DB
                             User user = authenticationService.findOrCreateUser(email, name);
                             if(!user.getEmail().endsWith("@fpt.edu.vn")) {
-                                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Vui lòng đăng nhập bằng email công ty.");
+                                response.sendRedirect(frontendLoginUrl + "?error=invalid_email");
                                 return;
                             }
                             if(user.getStatus() == UserStatus.INACTIVE) {
-                                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Tài khoản của bạn đã bị khóa.");
+                                response.sendRedirect(frontendLoginUrl + "?error=account_inactive");
                                 return;
                             }
                             OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
