@@ -2,10 +2,7 @@ package com.devteria.identity_service.service;
 import com.devteria.identity_service.dto.request.ChangePasswordRequest;
 import com.devteria.identity_service.dto.request.CustomerCreationRequest;
 import com.devteria.identity_service.dto.request.UserCreationRequest;
-import com.devteria.identity_service.entity.Department;
-import com.devteria.identity_service.entity.ForgotPasswordToken;
-import com.devteria.identity_service.entity.MailBody;
-import com.devteria.identity_service.entity.User;
+import com.devteria.identity_service.entity.*;
 import com.devteria.identity_service.enums.EventLog;
 import com.devteria.identity_service.enums.SystemRole;
 import com.devteria.identity_service.enums.TargetEntity;
@@ -14,8 +11,8 @@ import com.devteria.identity_service.exception.ErrorCode;
 import com.devteria.identity_service.exception.WebException;
 import com.devteria.identity_service.repository.DepartmentRepository;
 import com.devteria.identity_service.repository.ForgotPasswordTokenRepository;
+import com.devteria.identity_service.repository.RegistrationTokenRepository;
 import com.devteria.identity_service.repository.UserRepository;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import lombok.AccessLevel;
@@ -30,11 +27,11 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +45,7 @@ public class UserService {
     TemplateEngine templateEngine;
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
     ForgotPasswordTokenRepository forgotPasswordTokenRepository;
-    StringRedisTemplate redisTemplate;
+    RegistrationTokenRepository registrationTokenRepository;
     public User createUser(UserCreationRequest userCreationRequest) {
         User user = User.builder()
                 .username(userCreationRequest.getUser_name())
@@ -289,23 +286,25 @@ public class UserService {
         );
     }
     public void generateRegistrationOtpAndSendEmail(String email) {
-        System.out.println("Generating OTP for email: " + email);
-        String registrationOtpPrefix = "registration_otp:";
-        long OtpExpirationMinutes = 2;
         if(email.endsWith("fpt.edu.vn")) {
             throw new WebException(ErrorCode.INVALID_EMAIL_DOMAIN);
         }
         if(userRepository.findByEmail(email).isPresent()) {
             throw new WebException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
-        Long expire = redisTemplate.getExpire(registrationOtpPrefix + email, TimeUnit.SECONDS);
-        if(expire > OtpExpirationMinutes * 60 - 60) {
+        RegistrationToken token = registrationTokenRepository.findByEmail(email).orElse(new RegistrationToken());
+        if(token.getExpiryTime().isAfter(LocalDateTime.now().plusMinutes(4))) {
             throw new WebException(ErrorCode.PLEASE_WAIT_BEFORE_RESENDING_OTP);
         }
         String otp = String.format("%06d", new Random().nextInt(999999));
-        redisTemplate.opsForValue().set(registrationOtpPrefix + email, otp, OtpExpirationMinutes, TimeUnit.MINUTES);
+        token.setEmail(email);
+        token.setOtpCode(otp);
+        token.setExpiryTime(LocalDateTime.now().plusMinutes(2));
+        registrationTokenRepository.save(token);
         Context context = new Context();
+        context.setVariable("email", email);
         context.setVariable("digits", otp);
+        context.setVariable("expiresMinutes", 2);
         context.setVariable("currentYear", Year.now().getValue());
         String htmlTemplate = templateEngine.process("registration-otp-email", context);
         MailBody mailBody = MailBody.builder()
@@ -315,16 +314,17 @@ public class UserService {
                 .build();
         EmailService.sendEmail(mailBody);
     }
+    @Transactional
     public boolean verifyRegistrationOtp(String email, String otp) {
-        String key = "registration_otp:" + email;
-        String storedOtp = redisTemplate.opsForValue().get(key);
-        if (storedOtp == null) {
+        RegistrationToken token = registrationTokenRepository.findByEmail(email).orElseThrow(() -> new WebException(ErrorCode.OTP_NOT_FOUND));
+        if(LocalDateTime.now().isAfter(token.getExpiryTime())) {
+            registrationTokenRepository.delete(token);
             throw new WebException(ErrorCode.EXPIRED_OTP);
         }
-        if (!storedOtp.equals(otp)) {
+        if(!token.getOtpCode().equals(otp)) {
             throw new WebException(ErrorCode.INVALID_OTP);
         }
-        redisTemplate.delete(key);
+        registrationTokenRepository.delete(token);
         return true;
     }
 }
