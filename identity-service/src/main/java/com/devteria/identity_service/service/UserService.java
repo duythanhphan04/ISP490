@@ -308,7 +308,7 @@ public class UserService {
         context.setVariable("digits", otp);
         context.setVariable("expiresMinutes", 2);
         context.setVariable("currentYear", Year.now().getValue());
-        String htmlTemplate = templateEngine.process("registration-otp-email", context);
+        String htmlTemplate = templateEngine.process("otp-email", context);
         MailBody mailBody = MailBody.builder()
                 .to(new String[]{email})
                 .subject("[ICSAS] Registration OTP")
