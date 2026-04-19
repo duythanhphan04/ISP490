@@ -1,4 +1,5 @@
 package com.devteria.identity_service.service;
+import com.devteria.identity_service.dto.request.AssignTicketRequest;
 import com.devteria.identity_service.dto.request.TicketCreationRequest;
 import com.devteria.identity_service.entity.Dashboard;
 import com.devteria.identity_service.entity.Ticket;
@@ -14,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -84,9 +86,12 @@ public class TicketService {
         return ticketRepository.findById(ticketID).orElseThrow( () -> new WebException(ErrorCode.TICKET_NOT_FOUND));
     }
     @Transactional
-    public Ticket assignTicket(String ticketID, String staffID) {
-        Ticket ticket = getTicketByID(ticketID);
-        User staff = userService.getUserByID(staffID);
+    public Ticket assignTicket(AssignTicketRequest request) {
+        Ticket ticket = getTicketByID(request.getTicketId());
+        if(request.getDeadline() != null && request.getDeadline().isBefore(LocalDateTime.now())){
+            throw new WebException(ErrorCode.INVALID_DEADLINE);
+        }
+        User staff = userService.getUserByID(request.getAssigneeId());
         Ticket oldTicketSnapshot = Ticket.builder()
                 .status(ticket.getStatus())
                 .assigned_staff(ticket.getAssigned_staff())
@@ -99,13 +104,14 @@ public class TicketService {
         } else {
             throw new WebException(ErrorCode.INVALID_TICKET_STATUS_UPDATE);
         }
+        ticket.setDeadline(request.getDeadline());
         ticket.setUpdatedAt(Instant.now());
         Ticket updatedTicket = ticketRepository.save(ticket);
         systemAuditLogService.logEntityUpdate(
                 userService.getLoggedInUser(),
                 oldTicketSnapshot,
                 updatedTicket,
-                ticketID,
+                request.getTicketId(),
                 TargetEntity.TICKET,
                 EventLog.TICKET_ASSIGNED
         );

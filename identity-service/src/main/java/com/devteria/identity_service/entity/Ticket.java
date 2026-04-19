@@ -12,6 +12,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -64,4 +65,7 @@ public class Ticket {
 
     @Column(name = "updated_at")
     Instant updatedAt;
+
+    @Column(name = "deadline")
+    LocalDateTime deadline;
 }

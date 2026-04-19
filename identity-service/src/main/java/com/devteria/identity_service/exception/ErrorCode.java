@@ -46,7 +46,8 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXISTS (1038, "Email already exists", HttpStatus.BAD_REQUEST),
     USER_INACTIVE (1039, "User is inactive", HttpStatus.FORBIDDEN),
     ACCESS_DASHBOARD_DENIED(1040, "Access denied", HttpStatus.FORBIDDEN),
-    OTP_NOT_FOUND (1041, "OTP not found", HttpStatus.BAD_REQUEST);
+    OTP_NOT_FOUND (1041, "OTP not found", HttpStatus.BAD_REQUEST),
+    INVALID_DEADLINE (1042, "Invalid deadline", HttpStatus.BAD_REQUEST);
   private final int code;
   private final String message;
   private final HttpStatusCode httpStatusCode;

@@ -1,5 +1,6 @@
 package com.devteria.identity_service.controller;
 
+import com.devteria.identity_service.dto.request.AssignTicketRequest;
 import com.devteria.identity_service.dto.request.TicketCreationRequest;
 import com.devteria.identity_service.dto.response.ApiResponse;
 import com.devteria.identity_service.entity.Ticket;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -151,10 +153,10 @@ public class TicketController {
                 .build();
     }
     @PreAuthorize("hasRole('BI')")
-    @PostMapping("/{ticketID}/assign/{staffID}")
+    @PostMapping("/assign-ticket")
     @Operation(summary = "Assign a ticket to a BI member")
-    public ApiResponse<Ticket> assignTicket(@PathVariable String ticketID, @PathVariable String staffID) {
-        Ticket ticket = ticketService.assignTicket(ticketID, staffID);
+    public ApiResponse<Ticket> assignTicket(@RequestBody @Valid AssignTicketRequest request) {
+        Ticket ticket = ticketService.assignTicket(request);
         return ApiResponse.<Ticket>builder()
                 .data(ticket)
                 .message("Ticket assigned successfully")
