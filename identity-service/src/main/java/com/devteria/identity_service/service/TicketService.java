@@ -47,6 +47,10 @@ public class TicketService {
                 com.devteria.identity_service.enums.TargetEntity.TICKET,
                 ticket.getTicket_id()
         );
+        String approverID = ticket.getApprover().getUser_id();
+        String title ="New Ticket Created";
+        String message = String.format("A new ticket with ID %s has been created and is waiting for your approval.", ticket.getTicket_id());
+        notificationService.sendNotification(approverID, title, message);
         return ticket;
     }
     @Transactional
@@ -69,6 +73,10 @@ public class TicketService {
                 com.devteria.identity_service.enums.TargetEntity.TICKET,
                 ticket.getTicket_id()
         );
+        String approverID = ticket.getApprover().getUser_id();
+        String title ="New Ticket Created";
+        String message = String.format("A new ticket with ID %s has been created and is waiting for your approval.", ticket.getTicket_id());
+        notificationService.sendNotification(approverID, title, message);
         return ticket;
     }
     @Transactional
