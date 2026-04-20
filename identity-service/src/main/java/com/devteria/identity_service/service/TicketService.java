@@ -27,6 +27,7 @@ public class TicketService {
     SystemAuditLogService systemAuditLogService;
     DashboardService dashboardService;
     DashboardRepository dashboardRepository;
+    NotificationService notificationService;
     @Transactional
     public Ticket createTicket(TicketCreationRequest request) {
         User loggedInUser = userService.getLoggedInUser();
@@ -95,6 +96,7 @@ public class TicketService {
         Ticket oldTicketSnapshot = Ticket.builder()
                 .status(ticket.getStatus())
                 .assigned_staff(ticket.getAssigned_staff())
+                .deadline(ticket.getDeadline())
                 .build();
         if (ticket.getStatus() == TicketStatus.APPROVED ) {
             ticket.setAssigned_staff(staff);
@@ -115,6 +117,10 @@ public class TicketService {
                 TargetEntity.TICKET,
                 EventLog.TICKET_ASSIGNED
         );
+        String deadlineInfo = request.getDeadline() != null ? request.getDeadline().toString() : "no deadline";
+        String title ="Ticket Assigned";
+        String message = String.format("You have been assigned to ticket ID %s with %s", request.getTicketId(), deadlineInfo);
+        notificationService.sendNotification(staff.getUser_id(), title, message);
         return updatedTicket;
     }
     public List<Ticket> getTicketsByRequester(String requesterID, TicketStatus status) {
@@ -161,6 +167,7 @@ public class TicketService {
                 if(newStatus == TicketStatus.VERIFIED || newStatus == TicketStatus.IN_PROGRESS) {
                     isValidTransition = true;
                 }
+                break;
             case VERIFIED:
                 if (newStatus == TicketStatus.RESOLVED) {
                     isValidTransition = true;
@@ -180,14 +187,29 @@ public class TicketService {
         ticket.setStatus(newStatus);
         ticket.setUpdatedAt(Instant.now());
         Ticket updatedTicket = ticketRepository.save(ticket);
+        User currentUser = userService.getLoggedInUser();
         systemAuditLogService.logEntityUpdate(
-                userService.getLoggedInUser(),
+                currentUser,
                 oldTicketSnapshot,
                 updatedTicket,
                 ticketID,
                 TargetEntity.TICKET,
                 EventLog.TICKET_STATUS_UPDATED
         );
+        if(!currentUser.getUser_id().equals(ticket.getRequester().getUser_id())){
+            String requesterID = ticket.getRequester().getUser_id();
+            String title ="Ticket Status Updated";
+            String message = String.format("The status of your ticket with ID %s has been updated from %s to %s.", ticketID, currentStatus, newStatus);
+            notificationService.sendNotification(requesterID, title, message);
+        }
+        if(newStatus == TicketStatus.DONE && ticket.getAssigned_staff() != null){
+            String staffID = ticket.getAssigned_staff().getUser_id();
+            if(!currentUser.getUser_id().equals(staffID)){
+                String title ="Ticket Completed";
+                String message = String.format("The ticket with ID %s that you worked on has been marked as done.", ticketID);
+                notificationService.sendNotification(staffID, title, message);
+            }
+        }
         return updatedTicket;
     }
     @Transactional
@@ -215,6 +237,10 @@ public class TicketService {
                 TargetEntity.TICKET,
                 EventLog.TICKET_REJECTED
         );
+        String requesterID = ticket.getRequester().getUser_id();
+        String title ="Ticket Rejected";
+        String message = String.format("Your ticket with ID %s has been rejected. Reason: %s", ticketID, reason);
+        notificationService.sendNotification(requesterID, title, message);
         return updatedTicket;
     }
     @Transactional
@@ -240,6 +266,12 @@ public class TicketService {
                 TargetEntity.TICKET,
                 EventLog.TICKET_RESULT_SUBMITTED
         );
+        String notificationTitle = "Dashboard Result Submitted";
+        String notificationMessage = String.format("A dashboard result has been submitted for ticket ID %s and is waiting for your verification.", ticketID);
+        List<User> administrators = userService.getAllAdministrators();
+        if(administrators!= null && !administrators.isEmpty()){
+            administrators.forEach(admin -> notificationService.sendNotification(admin.getUser_id(), notificationTitle, notificationMessage));
+        }
         return updatedTicket;
     }
     @Transactional
@@ -278,6 +310,12 @@ public class TicketService {
                 TargetEntity.TICKET,
                 EventLog.TICKET_STATUS_UPDATED
         );
+        if(ticket.getAssigned_staff()!=null){
+            String staffID = ticket.getAssigned_staff().getUser_id();
+            String title ="Dashboard Approved";
+            String message = String.format("The dashboard you worked on for ticket ID %s has been approved and is now active.", ticketID);
+            notificationService.sendNotification(staffID, title, message);
+        }
         return updatedTicket;
     }
     @Transactional
@@ -299,6 +337,12 @@ public class TicketService {
                 TargetEntity.TICKET,
                 EventLog.TICKET_STATUS_UPDATED
         );
+        if(ticket.getAssigned_staff()!=null){
+            String staffID = ticket.getAssigned_staff().getUser_id();
+            String title ="Dashboard Rejected";
+            String message = String.format("The dashboard you worked on for ticket ID %s has been rejected. Reason: %s", ticketID, reason);
+            notificationService.sendNotification(staffID, title, message);
+            }
         return updatedTicket;
     }
     public List<Ticket> getTicketByRequesterID(String requesterID) {

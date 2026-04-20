@@ -329,4 +329,8 @@ public class UserService {
         registrationTokenRepository.delete(token);
         return true;
     }
+
+    public List<User> getAllAdministrators() {
+        return userRepository.findByRole(SystemRole.ADMINISTRATOR);
+    }
 }
