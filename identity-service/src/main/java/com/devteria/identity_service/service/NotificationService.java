@@ -25,6 +25,7 @@ public class NotificationService {
                 .build();
         Notification saved =notificationRepository.save(notification);
         Map<String,String> data = new HashMap<>();
+        data.put("id", saved.getId());
         data.put("userID",userID);
         data.put("title",title);
         data.put("message",message);
