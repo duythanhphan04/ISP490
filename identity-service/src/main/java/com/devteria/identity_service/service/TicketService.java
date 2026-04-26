@@ -49,7 +49,7 @@ public class TicketService {
         );
         String approverID = ticket.getApprover().getUser_id();
         String title ="New Ticket Created";
-        String message = String.format("A new ticket with ID %s has been created and is waiting for your approval.", ticket.getTicket_id());
+        String message = String.format("A new ticket from %s has been created and is waiting for your approval.", ticket.getRequester().getUsername());
         notificationService.sendNotification(approverID, title, message);
         return ticket;
     }
@@ -75,7 +75,7 @@ public class TicketService {
         );
         String approverID = ticket.getApprover().getUser_id();
         String title ="New Ticket Created";
-        String message = String.format("A new ticket with ID %s has been created and is waiting for your approval.", ticket.getTicket_id());
+        String message = String.format("A new ticket from %s has been created and is waiting for your approval.", ticket.getRequester().getUsername());
         notificationService.sendNotification(approverID, title, message);
         return ticket;
     }
@@ -127,7 +127,8 @@ public class TicketService {
         );
         String deadlineInfo = request.getDeadline() != null ? request.getDeadline().toString() : "no deadline";
         String title ="Ticket Assigned";
-        String message = String.format("You have been assigned to ticket ID %s with %s", request.getTicketId(), deadlineInfo);
+        String message = String.format("You have been assigned to a ticket from  %s with deadline: %s and description: %s"
+                , ticket.getRequester().getUsername(), deadlineInfo, ticket.getDescription());
         notificationService.sendNotification(staff.getUser_id(), title, message);
         return updatedTicket;
     }
@@ -207,14 +208,14 @@ public class TicketService {
         if(!currentUser.getUser_id().equals(ticket.getRequester().getUser_id())){
             String requesterID = ticket.getRequester().getUser_id();
             String title ="Ticket Status Updated";
-            String message = String.format("The status of your ticket with ID %s has been updated from %s to %s.", ticketID, currentStatus, newStatus);
+            String message = String.format("The status of your ticket has been updated from %s to %s.", currentStatus, newStatus);
             notificationService.sendNotification(requesterID, title, message);
         }
         if(newStatus == TicketStatus.DONE && ticket.getAssigned_staff() != null){
             String staffID = ticket.getAssigned_staff().getUser_id();
             if(!currentUser.getUser_id().equals(staffID)){
                 String title ="Ticket Completed";
-                String message = String.format("The ticket with ID %s that you worked on has been marked as done.", ticketID);
+                String message = String.format("The ticket from %s that you worked on has been marked as done.", ticket.getRequester().getUsername());
                 notificationService.sendNotification(staffID, title, message);
             }
         }
@@ -247,7 +248,7 @@ public class TicketService {
         );
         String requesterID = ticket.getRequester().getUser_id();
         String title ="Ticket Rejected";
-        String message = String.format("Your ticket with ID %s has been rejected. Reason: %s", ticketID, reason);
+        String message = String.format("Your ticket has been rejected. Reason: %s", reason);
         notificationService.sendNotification(requesterID, title, message);
         return updatedTicket;
     }
@@ -275,7 +276,8 @@ public class TicketService {
                 EventLog.TICKET_RESULT_SUBMITTED
         );
         String notificationTitle = "Dashboard Result Submitted";
-        String notificationMessage = String.format("A dashboard result has been submitted for ticket ID %s and is waiting for your verification.", ticketID);
+        String notificationMessage = String.format("A dashboard result has been submitted for ticket from %s and is waiting for your verification."
+                , ticket.getRequester().getUsername());
         List<User> administrators = userService.getAllAdministrators();
         if(administrators!= null && !administrators.isEmpty()){
             administrators.forEach(admin -> notificationService.sendNotification(admin.getUser_id(), notificationTitle, notificationMessage));
@@ -321,7 +323,8 @@ public class TicketService {
         if(ticket.getAssigned_staff()!=null){
             String staffID = ticket.getAssigned_staff().getUser_id();
             String title ="Dashboard Approved";
-            String message = String.format("The dashboard you worked on for ticket ID %s has been approved and is now active.", ticketID);
+            String message = String.format("The dashboard you worked on for ticket from %s has been approved and is now active."
+                    , ticket.getRequester().getUsername());
             notificationService.sendNotification(staffID, title, message);
         }
         return updatedTicket;
@@ -348,7 +351,7 @@ public class TicketService {
         if(ticket.getAssigned_staff()!=null){
             String staffID = ticket.getAssigned_staff().getUser_id();
             String title ="Dashboard Rejected";
-            String message = String.format("The dashboard you worked on for ticket ID %s has been rejected. Reason: %s", ticketID, reason);
+            String message = String.format("The dashboard you worked on for ticket from %s has been rejected. Reason: %s", ticket.getRequester().getUsername(), reason);
             notificationService.sendNotification(staffID, title, message);
             }
         return updatedTicket;

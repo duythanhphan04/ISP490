@@ -174,7 +174,7 @@ public class TicketController {
                 .code(1000)
                 .build();
     }
-    @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('BI') or hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ADMINISTRATOR') or hasRole('BI') or hasRole('STAFF')")
     @PostMapping("/reject/{ticketID}")
     @Operation(summary = "Reject a ticket")
     public ApiResponse<Ticket> rejectTicket(@PathVariable String ticketID, @RequestParam String reason) {
