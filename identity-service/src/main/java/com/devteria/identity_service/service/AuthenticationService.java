@@ -46,9 +46,10 @@ public class AuthenticationService {
     OutboundUserClient outboundUserClient;
     InvalidatedTokenRepository invalidatedTokenRepository;
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
     @NonFinal
-    protected static final String SIGNER_KEY =
-            "p7cHINXNIOg7JEYDrVOYKzMREMuZtAtuZzWsz00TyCX+CikSXSjoLImFBx6ZrsJ6";
+    @Value("${jwt.signer-key}")
+    private String SIGNER_KEY;
 
     @NonFinal
     @Value("${jwt.valid.duration}")
@@ -118,8 +119,8 @@ public class AuthenticationService {
         var user = userRepository.findByEmail(request.getEmail())
                         .orElseThrow(() -> new WebException(ErrorCode.WRONG_CREDENTIALS));
         if(user.getStatus() != UserStatus.ACTIVE) throw new WebException(ErrorCode.USER_INACTIVE);
-//        boolean isPasswordMatch = passwordEncoder.matches(request.getPassword(), user.getPassword());
-//        if (!isPasswordMatch) throw new WebException(ErrorCode.WRONG_CREDENTIALS);
+        boolean isPasswordMatch = passwordEncoder.matches(request.getPassword(), user.getPassword());
+        if (!isPasswordMatch) throw new WebException(ErrorCode.WRONG_CREDENTIALS);
         var token = generateToken(user);
         return AuthenticationResponse.builder().token(token).authenticated(true).build();
     }
